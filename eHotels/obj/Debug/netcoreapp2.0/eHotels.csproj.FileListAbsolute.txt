@@ -1,0 +1,12 @@
+D:\Ecole\Hiver2019\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.deps.json
+D:\Ecole\Hiver2019\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.runtimeconfig.json
+D:\Ecole\Hiver2019\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.runtimeconfig.dev.json
+D:\Ecole\Hiver2019\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.dll
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.csprojAssemblyReference.cache
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.csproj.CoreCompileInputs.cache
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.AssemblyInfoInputs.cache
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.AssemblyInfo.cs
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\UserSecretsAssemblyInfo.cs
+D:\Ecole\Hiver2019\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.pdb
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.dll
+D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.pdb
