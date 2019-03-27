@@ -22,7 +22,7 @@ CREATE TABLE eHotel.employee (
 
 CREATE TABLE eHotel.customer (
 	ssn INT PRIMARY KEY,
-	date_of_employment DATE NOT NULL,
+	register_date DATE NOT NULL,
 	username VARCHAR(50) NOT NULL,
 	password VARCHAR(50) NOT NULL,
 	CONSTRAINT customer_person_fkey FOREIGN KEY (ssn)

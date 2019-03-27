@@ -23,5 +23,39 @@ namespace eHotels.Models.AccountViewModels
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required]
+        [Display(Name = "SSN")]
+        [RegularExpression("[0-9]{9}",ErrorMessage ="SSN should be exactly 9 numbers")]
+        public string SSN { get; set; }
+
+        [Required]
+        [Display(Name = "Full Name")]
+        public string FullName { get; set; }
+
+        [Required]
+        [Display(Name = "Street Number")]
+        public string StreetNumber { get; set; }
+
+        [Required]
+        [Display(Name = "Street Name")]
+        public string StreetName { get; set; }
+
+        [Display(Name = "Apartment Number")]
+        public string AptNumber { get; set; }
+
+        [Required]
+        [Display(Name = "City")]
+        public string City { get; set; }
+
+        [Required]
+        [Display(Name = "State")]
+        [RegularExpression("[A-Z]{2}", ErrorMessage = "SSN should be exactly 2 capital letters")]
+        public string State { get; set; }
+
+        [Required]
+        [Display(Name = "Zip code")]
+        [RegularExpression("[0-9A-Z]{6}", ErrorMessage = "Zip code should be exactly 6 characters")]
+        public string Zip { get; set; }
     }
 }
