@@ -7,17 +7,28 @@ using Microsoft.AspNetCore.Mvc;
 using eHotels.Models;
 using eHotels.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace eHotels.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
+        private IMemoryCache _cache;
 
         public HomeController(
-                        ApplicationDbContext context)
+                    UserManager<ApplicationUser> userManager,
+                    SignInManager<ApplicationUser> signInManager,
+                    ApplicationDbContext context,
+                    IMemoryCache cache)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
             _context = context;
+            _cache = cache;
         }
 
 
