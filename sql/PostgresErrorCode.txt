@@ -1,0 +1,10 @@
+Postgres Error code
+CODE
+
+23505: MessageText:duplicate key value violates unique constraint \"person_pkey\       		Detail:Key (ssn)=(123456789) already exists.
+
+23502: Messagetext:null value in column \"full_name\" violates not-null constraint			Detail:"Failing row contains (243712347, null, 3, dfsaasdf, 3, sfadfdas, XS, 123wer)."
+
+
+
+

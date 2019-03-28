@@ -138,8 +138,8 @@ namespace eHotels.Data
                     .HasColumnName("ssn")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.DateOfEmployment)
-                    .HasColumnName("date_of_employment")
+                entity.Property(e => e.RegisterDate)
+                    .HasColumnName("register_date")
                     .HasColumnType("date");
 
                 entity.Property(e => e.Password)

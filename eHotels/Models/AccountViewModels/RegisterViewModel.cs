@@ -55,7 +55,7 @@ namespace eHotels.Models.AccountViewModels
 
         [Required]
         [Display(Name = "Zip code")]
-        [RegularExpression("[0-9A-Z]{6}", ErrorMessage = "Zip code should be exactly 6 characters")]
+        [RegularExpression("[0-9a-zA-Z]{6}", ErrorMessage = "Zip code should be exactly 6 characters")]
         public string Zip { get; set; }
     }
 }

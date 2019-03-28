@@ -17,6 +17,7 @@ using eHotels.Data;
 using System.Data.SqlClient;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace eHotels.Controllers
 {
@@ -133,34 +134,36 @@ namespace eHotels.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                int ssn = Convert.ToInt32(model.SSN);
-                var user = new ApplicationUser { UserName = model.Email,
-                                                Email = model.Email,
-                                                SSN = ssn,
-                                                Role = Constants.EMPLOYEE };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                Boolean insertResult = createCustomer(model);
+                if(insertResult)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    int ssn = Convert.ToInt32(model.SSN);
+                    var user = new ApplicationUser
+                    {
+                        UserName = model.Email,
+                        Email = model.Email,
+                        SSN = ssn,
+                        Role = Constants.EMPLOYEE
+                    };
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User created a new account with password.");
 
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                    //await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation("User created a new account with password.");
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
-
-
-                    //var success = createCustomer(model);
-                    //success.Wait();
-                    //if (success.Result)
-                    var success = createCustomer(model);
 
                         return RedirectToLocal(returnUrl);
+                    }
+                    AddErrors(result);
                 }
-                AddErrors(result);
+                else
+                {
+                    ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                }
+                
             }
-
             // If we got this far, something failed, redisplay form
             return View(model);
         }
@@ -221,35 +224,65 @@ namespace eHotels.Controllers
 
         private Boolean createCustomer(RegisterViewModel model)
         {
-            //string connectionString = "Data Source=localhost:5432; Initial Catalog = LANDesk; Persist Security Info = True; User ID=postgres; Password=password1";
+            Boolean result = insertPerson(new Person {
+                Ssn = Convert.ToInt32(model.SSN),
+                FullName = model.FullName,
+                StreetNumber = model.StreetNumber,
+                StreetName = model.StreetName,
+                AptNumber = model.AptNumber,
+                City = model.City,
+                PState = model.State,
+                Zip = model.Zip
+            });
+            
+            if(result)
+            {
+                result = insertCustomer(new Customer
+                {
+                    Ssn = Convert.ToInt32(model.SSN),
+                    RegisterDate = DateTime.Now,
+                    Username = model.Email,
+                    Password = model.Password
+                });
+            }
+            return result;
+        }
 
-            //using (var context = new SqlConnection(connectionString))
-            //{
-            //    var cmd = new SqlCommand
-            //    {
-            //        CommandText = "INSERT INTO eHotel.Person" +
-            //        "VALUES ("+model.SSN+","+model.FullName+","+model.StreetNumber + "," +model.StreetName+
-            //        "," + model.AptNumber + "," + model.City + "," + model.State + "," + model.Zip+"); ",
-            //        CommandType = CommandType.Text,
-            //        Connection = context
-            //    };
+        private Boolean insertPerson(Person model)
+        {
+            Object[] insertArray = new object[] {model.Ssn,model.FullName,model.StreetNumber,model.StreetName,
+                model.AptNumber,model.City,model.PState,model.Zip };
+            try
+            {
+                var test2 = _context.Database.ExecuteSqlCommand(
+                   "INSERT INTO eHotel.Person VALUES ({0},null,{2},{3},{4},{5},{6},{7})",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
 
-            //    context.Open();
-
-            //    var reader = cmd.ExecuteReader();
-
-            //    reader.Close();
-            //}
-            int ssn = Convert.ToInt32(model.SSN);
-            Object[] testArray = new object[] {ssn,model.FullName,model.StreetNumber,model.StreetName,
-                model.AptNumber,model.City,model.State,model.Zip };
-            //var test = await _context.Database.ExecuteSqlCommandAsync(
-            //    "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
-            //    parameters: testArray );
-            var test2 = _context.Database.ExecuteSqlCommand(
-               "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
-               parameters: testArray);
-            return true;
+        private Boolean insertCustomer(Customer model)
+        {
+            try
+            {
+                Object[] insertArray = new object[] { model.Ssn, model.RegisterDate, model.Username, model.Password };
+                var test2 = _context.Database.ExecuteSqlCommand(
+                   "INSERT INTO eHotel.Customer VALUES ({0},{1},{2},{3})",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
         }
 
         private async Task<Boolean> isEmployee()

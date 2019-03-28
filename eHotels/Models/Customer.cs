@@ -12,7 +12,7 @@ namespace eHotels.Models
         }
 
         public int Ssn { get; set; }
-        public DateTime DateOfEmployment { get; set; }
+        public DateTime RegisterDate { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
 
