@@ -35,14 +35,14 @@ namespace eHotels.Models.AccountViewModels
 
         [Required]
         [Display(Name = "Street Number")]
-        public string StreetNumber { get; set; }
+        public int StreetNumber { get; set; }
 
         [Required]
         [Display(Name = "Street Name")]
         public string StreetName { get; set; }
 
         [Display(Name = "Apartment Number")]
-        public string AptNumber { get; set; }
+        public int AptNumber { get; set; }
 
         [Required]
         [Display(Name = "City")]
