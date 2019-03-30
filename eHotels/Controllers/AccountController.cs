@@ -166,9 +166,7 @@ namespace eHotels.Controllers
         [HttpGet]
         public IActionResult RegisterEmployee(string returnUrl = null)
         {
-            var allowed = isEmployee();
-            allowed.Wait();
-            if (allowed.Result)
+            if (isEmployee())
             {
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
@@ -183,9 +181,7 @@ namespace eHotels.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterEmployee(RegisterViewModel model, string returnUrl = null)
         {
-            var allowed = isEmployee();
-            allowed.Wait();
-            if (allowed.Result)
+            if (isEmployee())
             {
                 ViewData["ReturnUrl"] = returnUrl;
                 if (ModelState.IsValid)
@@ -224,6 +220,57 @@ namespace eHotels.Controllers
                 return RedirectToAction("AccessDenied");
             }
         }
+        #endregion
+
+        #region Update
+
+        [HttpGet]
+        public IActionResult UpdateUser(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            ApplicationUser user = getUser();
+            Person userPerson = _context.Person.FromSql("SELECT * FROM eHotel.person WHERE SSN={0}", parameters: user.SSN).ToList()[0];
+            RegisterViewModel model = new RegisterViewModel {
+                SSN = userPerson.Ssn.ToString(),
+                FullName = userPerson.FullName,
+                StreetNumber = userPerson.StreetNumber,
+                StreetName = userPerson.StreetName,
+                AptNumber = userPerson.AptNumber,
+                City = userPerson.City,
+                State = userPerson.PState,
+                Zip = userPerson.Zip
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUser(RegisterViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            ModelState.Remove("SSN");
+            ModelState.Remove("DateEmployment");
+            ModelState.Remove("Email");
+            ModelState.Remove("Password");
+            ModelState.Remove("ConfirmPassword");
+            ApplicationUser user = getUser();
+
+            if (ModelState.IsValid && user.SSN.ToString().Equals(model.SSN))
+            {
+                Boolean insertResult = updatePerson(convertModelToPerson(model));
+                if (insertResult)
+                {
+                    return RedirectToLocal(returnUrl);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                }
+            }
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
         #endregion
 
         [HttpGet]
@@ -280,6 +327,26 @@ namespace eHotels.Controllers
             }
         }
 
+        private Boolean updatePerson(Person model)
+        {
+            Object[] insertArray = new object[] {model.FullName,model.StreetNumber,model.StreetName,
+                model.AptNumber,model.City,model.PState,model.Zip,model.Ssn };
+            try
+            {
+                _context.Database.ExecuteSqlCommand(
+                   "UPDATE eHotel.Person SET full_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, p_state={5}, zip={6} " +
+                   "WHERE ssn={7}",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
         private Boolean insertCustomer(Customer model)
         {
             try
@@ -301,17 +368,7 @@ namespace eHotels.Controllers
 
         private Boolean createEmployee(RegisterViewModel model)
         {
-            Boolean result = insertPerson(new Person
-            {
-                Ssn = Convert.ToInt32(model.SSN),
-                FullName = model.FullName,
-                StreetNumber = model.StreetNumber,
-                StreetName = model.StreetName,
-                AptNumber = model.AptNumber,
-                City = model.City,
-                PState = model.State,
-                Zip = model.Zip
-            });
+            Boolean result = insertPerson(convertModelToPerson(model));
 
             if (result)
             {
@@ -368,10 +425,10 @@ namespace eHotels.Controllers
             }
         }
 
-        private async Task<Boolean> isEmployee()
+        private Boolean isEmployee()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            if(user != null)
+            var user = getUser();
+            if (user != null)
             {
                 return user.Role.Equals(Constants.EMPLOYEE);
             }
@@ -379,6 +436,32 @@ namespace eHotels.Controllers
             {
                 return false;
             }
+        }
+
+        private async Task<ApplicationUser> getUserAsync()
+        {
+            return await _userManager.GetUserAsync(HttpContext.User);
+        }
+
+        private ApplicationUser getUser()
+        {
+            var userTask = getUserAsync();
+            userTask.Wait();
+            return userTask.Result;
+        }
+
+        private Person convertModelToPerson(RegisterViewModel model)
+        {
+            return new Person {
+                Ssn = Convert.ToInt32(model.SSN),
+                FullName = model.FullName,
+                StreetNumber = model.StreetNumber,
+                StreetName = model.StreetName,
+                AptNumber = model.AptNumber,
+                City = model.City,
+                PState = model.State,
+                Zip = model.Zip
+            };
         }
 
         #endregion
