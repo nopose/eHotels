@@ -50,6 +50,7 @@ namespace eHotels.Controllers
         [TempData]
         public string ErrorMessage { get; set; }
 
+        #region Login/Logout
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
@@ -66,10 +67,6 @@ namespace eHotels.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            var allowed = isEmployee();
-            allowed.Wait();
-            if (allowed.Result)
-            {
                 ViewData["ReturnUrl"] = returnUrl;
                 if (ModelState.IsValid)
                 {
@@ -95,11 +92,15 @@ namespace eHotels.Controllers
 
                 // If we got this far, something failed, redisplay form
                 return View(model);
-            }
-            else
-            {
-                return RedirectToAction("About");
-            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         [HttpGet]
@@ -108,22 +109,15 @@ namespace eHotels.Controllers
         {
             return View();
         }
+        #endregion
 
+        #region Registers
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register(string returnUrl = null)
         {
-            //var allowed = isEmployee();
-            //allowed.Wait();
-            //if (allowed.Result)
-            //{
                 ViewData["ReturnUrl"] = returnUrl;
                 return View();
-            //}
-            //else
-            //{
-            //    return RedirectToAction("About");
-            //}
         }
 
         [HttpPost]
@@ -132,6 +126,7 @@ namespace eHotels.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            ModelState.Remove("DateEmployment");
             if (ModelState.IsValid)
             {
                 Boolean insertResult = createCustomer(model);
@@ -143,7 +138,7 @@ namespace eHotels.Controllers
                         UserName = model.Email,
                         Email = model.Email,
                         SSN = ssn,
-                        Role = Constants.EMPLOYEE
+                        Role = Constants.CUSTOMER
                     };
                     var result = await _userManager.CreateAsync(user, model.Password);
                     if (result.Succeeded)
@@ -168,37 +163,188 @@ namespace eHotels.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult RegisterEmployee(string returnUrl = null)
+        {
+            var allowed = isEmployee();
+            allowed.Wait();
+            if (allowed.Result)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied");
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> RegisterEmployee(RegisterViewModel model, string returnUrl = null)
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            var allowed = isEmployee();
+            allowed.Wait();
+            if (allowed.Result)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                if (ModelState.IsValid)
+                {
+                    Boolean insertResult = createEmployee(model);
+                    if (insertResult)
+                    {
+                        int ssn = Convert.ToInt32(model.SSN);
+                        var user = new ApplicationUser
+                        {
+                            UserName = model.Email,
+                            Email = model.Email,
+                            SSN = ssn,
+                            Role = Constants.EMPLOYEE
+                        };
+                        var result = await _userManager.CreateAsync(user, model.Password);
+                        if (result.Succeeded)
+                        {
+                            await _signInManager.SignInAsync(user, isPersistent: false);
+
+                            return RedirectToLocal(returnUrl);
+                        }
+                        AddErrors(result);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                    }
+
+                }
+                // If we got this far, something failed, redisplay form
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied");
+            }
         }
+        #endregion
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
-        {
-            if (userId == null || code == null)
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
-            }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
-        }
-
-        [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
         }
+
+        #region DBLogic
+        private Boolean createCustomer(RegisterViewModel model)
+        {
+            Boolean result = insertPerson(new Person
+            {
+                Ssn = Convert.ToInt32(model.SSN),
+                FullName = model.FullName,
+                StreetNumber = model.StreetNumber,
+                StreetName = model.StreetName,
+                AptNumber = model.AptNumber,
+                City = model.City,
+                PState = model.State,
+                Zip = model.Zip
+            });
+
+            if (result)
+            {
+                result = insertCustomer(new Customer
+                {
+                    Ssn = Convert.ToInt32(model.SSN),
+                    RegisterDate = DateTime.Now,
+                    Username = model.Email,
+                    Password = model.Password
+                });
+            }
+            return result;
+        }
+
+        private Boolean insertPerson(Person model)
+        {
+            Object[] insertArray = new object[] {model.Ssn,model.FullName,model.StreetNumber,model.StreetName,
+                model.AptNumber,model.City,model.PState,model.Zip };
+            try
+            {
+                _context.Database.ExecuteSqlCommand(
+                   "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean insertCustomer(Customer model)
+        {
+            try
+            {
+                Object[] insertArray = new object[] { model.Ssn, model.RegisterDate, model.Username, model.Password };
+                _context.Database.ExecuteSqlCommand(
+                   "INSERT INTO eHotel.Customer VALUES ({0},{1},{2},{3})",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+
+        private Boolean createEmployee(RegisterViewModel model)
+        {
+            Boolean result = insertPerson(new Person
+            {
+                Ssn = Convert.ToInt32(model.SSN),
+                FullName = model.FullName,
+                StreetNumber = model.StreetNumber,
+                StreetName = model.StreetName,
+                AptNumber = model.AptNumber,
+                City = model.City,
+                PState = model.State,
+                Zip = model.Zip
+            });
+
+            if (result)
+            {
+                result = insertEmployee(new Employee
+                {
+                    Ssn = Convert.ToInt32(model.SSN),
+                    DateOfEmployment = model.DateEmployment,
+                    Username = model.Email,
+                    Password = model.Password
+                });
+            }
+            return result;
+        }
+
+        private Boolean insertEmployee(Employee model)
+        {
+            try
+            {
+                Object[] insertArray = new object[] { model.Ssn, model.DateOfEmployment, model.Username, model.Password };
+                _context.Database.ExecuteSqlCommand(
+                   "INSERT INTO eHotel.Employee VALUES ({0},{1},{2},{3})",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+        #endregion
+
 
         #region Helpers
 
@@ -219,69 +365,6 @@ namespace eHotels.Controllers
             else
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
-        }
-
-        private Boolean createCustomer(RegisterViewModel model)
-        {
-            Boolean result = insertPerson(new Person {
-                Ssn = Convert.ToInt32(model.SSN),
-                FullName = model.FullName,
-                StreetNumber = model.StreetNumber,
-                StreetName = model.StreetName,
-                AptNumber = model.AptNumber,
-                City = model.City,
-                PState = model.State,
-                Zip = model.Zip
-            });
-            
-            if(result)
-            {
-                result = insertCustomer(new Customer
-                {
-                    Ssn = Convert.ToInt32(model.SSN),
-                    RegisterDate = DateTime.Now,
-                    Username = model.Email,
-                    Password = model.Password
-                });
-            }
-            return result;
-        }
-
-        private Boolean insertPerson(Person model)
-        {
-            Object[] insertArray = new object[] {model.Ssn,model.FullName,model.StreetNumber,model.StreetName,
-                model.AptNumber,model.City,model.PState,model.Zip };
-            try
-            {
-                var test2 = _context.Database.ExecuteSqlCommand(
-                   "INSERT INTO eHotel.Person VALUES ({0},null,{2},{3},{4},{5},{6},{7})",
-                   parameters: insertArray);
-                return true;
-            }
-            catch (PostgresException ex)
-            {
-                //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
-                return false;
-            }
-        }
-
-        private Boolean insertCustomer(Customer model)
-        {
-            try
-            {
-                Object[] insertArray = new object[] { model.Ssn, model.RegisterDate, model.Username, model.Password };
-                var test2 = _context.Database.ExecuteSqlCommand(
-                   "INSERT INTO eHotel.Customer VALUES ({0},{1},{2},{3})",
-                   parameters: insertArray);
-                return true;
-            }
-            catch (PostgresException ex)
-            {
-                //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
-                return false;
             }
         }
 

@@ -35,6 +35,7 @@ namespace eHotels.Models.AccountViewModels
 
         [Required]
         [Display(Name = "Street Number")]
+        [Range(1, Int32.MaxValue, ErrorMessage = "The street number should be higher than 0")]
         public int StreetNumber { get; set; }
 
         [Required]
@@ -42,7 +43,8 @@ namespace eHotels.Models.AccountViewModels
         public string StreetName { get; set; }
 
         [Display(Name = "Apartment Number")]
-        public int AptNumber { get; set; }
+        [Range(1, Int32.MaxValue, ErrorMessage = "The apartment number should be higher than 0")]
+        public int? AptNumber { get; set; }
 
         [Required]
         [Display(Name = "City")]
@@ -57,5 +59,10 @@ namespace eHotels.Models.AccountViewModels
         [Display(Name = "Zip code")]
         [RegularExpression("[0-9a-zA-Z]{6}", ErrorMessage = "Zip code should be exactly 6 characters")]
         public string Zip { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        [Display(Name = "Date of Employment")]
+        public DateTime DateEmployment { get; set; }
     }
 }

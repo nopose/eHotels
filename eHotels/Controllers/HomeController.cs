@@ -9,9 +9,11 @@ using eHotels.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eHotels.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -30,8 +32,7 @@ namespace eHotels.Controllers
             _context = context;
             _cache = cache;
         }
-
-
+        
         public IActionResult Index()
         {
             return View();
@@ -54,6 +55,11 @@ namespace eHotels.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult HomePage()
+        {
+            return View();
         }
     }
 }
