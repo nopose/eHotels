@@ -170,7 +170,7 @@ CREATE TABLE eHotel.rentingArc(
 	end_date TIMESTAMP NOT NULL
 );	
 
-CREATE OR REPLACE FUNCTION increment_num_rooms()
+CREATE OR REPLACE FUNCTION eHotel.increment_num_rooms()
   RETURNS trigger AS
 	$BODY$
 	BEGIN
@@ -184,25 +184,25 @@ CREATE OR REPLACE FUNCTION increment_num_rooms()
 CREATE TRIGGER num_rooms_inc AFTER INSERT
 ON eHotel.room
 FOR EACH ROW
-EXECUTE PROCEDURE increment_num_rooms ();
+EXECUTE PROCEDURE eHotel.increment_num_rooms ();
 	
-CREATE OR REPLACE FUNCTION decrement_num_rooms()
+CREATE OR REPLACE FUNCTION eHotel.decrement_num_rooms()
   RETURNS trigger AS
 	$BODY$
 	BEGIN
 		UPDATE eHotel.hotel
 		SET num_rooms = num_rooms - 1
-		WHERE NEW.hID = hotel.hID;
-		RETURN NEW;
+		WHERE OLD.hID = hotel.hID;
+		RETURN OLD;
 	END;
 	$BODY$ LANGUAGE plpgsql;
 
 CREATE TRIGGER num_rooms_dec AFTER DELETE
 ON eHotel.room
 FOR EACH ROW
-EXECUTE PROCEDURE decrement_num_rooms ();
+EXECUTE PROCEDURE eHotel.decrement_num_rooms ();
 	
-CREATE OR REPLACE FUNCTION increment_num_hotels()
+CREATE OR REPLACE FUNCTION eHotel.increment_num_hotels()
   RETURNS trigger AS
 	$BODY$
 	BEGIN
@@ -216,20 +216,20 @@ CREATE OR REPLACE FUNCTION increment_num_hotels()
 CREATE TRIGGER num_hotels_inc AFTER INSERT
 ON eHotel.hotel
 FOR EACH ROW
-EXECUTE PROCEDURE increment_num_hotels ();
+EXECUTE PROCEDURE eHotel.increment_num_hotels ();
 	
-CREATE OR REPLACE FUNCTION decrement_num_hotels()
+CREATE OR REPLACE FUNCTION eHotel.decrement_num_hotels()
   RETURNS trigger AS
 	$BODY$
 	BEGIN
 		UPDATE eHotel.hotelChain
 		SET num_hotels = num_hotels - 1
-		WHERE NEW.hcID = hotelChain.hcID;
-		RETURN NEW;
+		WHERE OLD.hcID = hotelChain.hcID;
+		RETURN OLD;
 	END;
 	$BODY$ LANGUAGE plpgsql;
 
 CREATE TRIGGER num_hotels_dec AFTER DELETE
 ON eHotel.hotel
 FOR EACH ROW
-EXECUTE PROCEDURE decrement_num_hotels ();
+EXECUTE PROCEDURE eHotel.decrement_num_hotels ();

@@ -227,6 +227,7 @@ namespace eHotels.Controllers
         [HttpGet]
         public IActionResult UpdateUser(string returnUrl = null)
         {
+            //FINDQUERY
             ViewData["ReturnUrl"] = returnUrl;
             ApplicationUser user = getUser();
             Person userPerson = _context.Person.FromSql("SELECT * FROM eHotel.person WHERE SSN={0}", parameters: user.SSN).ToList()[0];
@@ -245,7 +246,7 @@ namespace eHotels.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateUser(RegisterViewModel model, string returnUrl = null)
+        public IActionResult UpdateUser(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             ModelState.Remove("SSN");
@@ -314,6 +315,7 @@ namespace eHotels.Controllers
                 model.AptNumber,model.City,model.PState,model.Zip };
             try
             {
+                //FINDQUERY
                 _context.Database.ExecuteSqlCommand(
                    "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
                    parameters: insertArray);
@@ -333,6 +335,7 @@ namespace eHotels.Controllers
                 model.AptNumber,model.City,model.PState,model.Zip,model.Ssn };
             try
             {
+                //FINDQUERY
                 _context.Database.ExecuteSqlCommand(
                    "UPDATE eHotel.Person SET full_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, p_state={5}, zip={6} " +
                    "WHERE ssn={7}",
@@ -351,6 +354,7 @@ namespace eHotels.Controllers
         {
             try
             {
+                //FINDQUERY
                 Object[] insertArray = new object[] { model.Ssn, model.RegisterDate, model.Username, model.Password };
                 _context.Database.ExecuteSqlCommand(
                    "INSERT INTO eHotel.Customer VALUES ({0},{1},{2},{3})",
@@ -364,7 +368,6 @@ namespace eHotels.Controllers
                 return false;
             }
         }
-
 
         private Boolean createEmployee(RegisterViewModel model)
         {
@@ -387,6 +390,7 @@ namespace eHotels.Controllers
         {
             try
             {
+                //FINDQUERY
                 Object[] insertArray = new object[] { model.Ssn, model.DateOfEmployment, model.Username, model.Password };
                 _context.Database.ExecuteSqlCommand(
                    "INSERT INTO eHotel.Employee VALUES ({0},{1},{2},{3})",
