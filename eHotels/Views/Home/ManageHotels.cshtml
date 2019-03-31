@@ -7,35 +7,44 @@
 <div id="topList" class="row">
 
 </div>
-@foreach (var item in Model)
-{
-    <div id="hotel@(item.Hid)" class="card" style="margin-bottom:1%;">
-        <div class="card-header">
-            @item.HotelName
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3">
-                    <p class="card-text">Start Date : @item.StreetNumber @item.StreetName</p>
+<div class="row">
+    <div class="col-md-8">
+        @foreach (var item in Model)
+        {
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@item.HotelName</h3>
                 </div>
-                <div class="col-md-3">
-                    <p class="card-text">End Date : @item.NumRooms</p>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        @if (item.AptNumber != null)
+                        {
+                        <li class="list-group-item">Address: @item.StreetNumber Apt. @item.AptNumber @item.StreetName, @item.HState, @item.Zip</li>
+                        }
+                        else
+                        {
+                        <li class="list-group-item">Address: @item.StreetNumber @item.StreetName, @item.HState, @item.Zip</li>
+                        }
+                        <li class="list-group-item">Hotel chain: @item.Hc.HotelChainName</li>
+                        <li class="list-group-item">Manager: @item.ManagerNavigation.SsnNavigation.FullName</li>
+                        <li class="list-group-item">Category: @item.Category stars</li>
+                        <li class="list-group-item">Number of rooms: @item.NumRooms</li>
+                        <li class="list-group-item">Zip: @item.Email</li>
+                    </ul>
+                    <div class="col-md-1 text-center">
+                        <a onclick="hotelDelete(@item.Hid)" class="text-center">
+                            <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this hotel"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="offset-md-10 col-md-1 text-center">
-                    <a onclick="hotelDelete(@item.Hid)" class="text-center">
-                        <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this hotel"></i>
-                    </a>
-                </div>
-                @*<div class="col-md-1 text-center">
-                    <a id="@item.id" onclick="workoutEdit(@item.id, '@item.name', '@item.description', '@item.StartDate.ToShortDateString()', '@item.EndDate.ToShortDateString()')" data-toggle="modal" data-target="#EditProgramModal"><span data-toggle="tooltip" data-placement="top" title="Edit this hotel"><i class="fa fa-edit"></i></span></a>
-                </div>*@
             </div>
-        </div>
+        }
     </div>
-}
-<div class="card">
-    <div class="card-body">
-        <button class="btn btn-primary col-md-12" data-toggle="modal" data-target="#CreateProgramModal">Add a new Workout right now!</button>
+</div>
+    
+<div class="row">
+    <div class="col-md-8">
+        <a asp-area="" asp-controller="Home" asp-action="CreateHotel" class="btn btn-primary col-md-6">Add a new hotel</a>
     </div>
 </div>
 

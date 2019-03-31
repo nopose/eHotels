@@ -42,7 +42,6 @@ namespace eHotels.Controllers
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
-            var rooms = _context.Room.FromSql("SELECT * FROM eHotel.room").ToList();
             return View();
         }
 
@@ -70,7 +69,7 @@ namespace eHotels.Controllers
         {
             if (isEmployee())
             {
-                List<Hotel> hotels = new DBManipulation(_context).getHotels();
+                List<Hotel> hotels = new DBManipulation(_context).getHotelsFullNav();
                 return View(hotels);
             }
             else
