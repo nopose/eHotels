@@ -6,11 +6,19 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
+    ApplicationUser user = await UserManager.GetUserAsync(User);
+
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+                <a asp-area="" asp-controller="Account" asp-action="UpdateUser" title="Account Manager">Hello @UserManager.GetUserName(User)!</a>
             </li>
+            @if (user.Role.Equals(Constants.EMPLOYEE))
+            {
+                <li>
+                    <a asp-area="" asp-controller="Account" asp-action="RegisterEmployee" title="Register">Register a new employee</a>
+                </li>
+            }
             <li>
                 <button type="submit" class="btn btn-link navbar-btn navbar-link">Log out</button>
             </li>
