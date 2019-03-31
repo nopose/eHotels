@@ -3,9 +3,12 @@
     ViewData["Title"] = "ManageHotels";
 }
 
-<h2>Manage the hotels</h2>
-<div id="topList" class="row">
-
+<h2 id="toTop">Manage the hotels</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
 </div>
 <div class="row">
     <div class="col-md-8">
@@ -29,7 +32,6 @@
                         <li class="list-group-item">Manager: @item.ManagerNavigation.SsnNavigation.FullName</li>
                         <li class="list-group-item">Category: @item.Category stars</li>
                         <li class="list-group-item">Number of rooms: @item.NumRooms</li>
-                        <li class="list-group-item">Zip: @item.Email</li>
                     </ul>
                     <div class="col-md-1 text-center">
                         <a onclick="hotelDelete(@item.Hid)" class="text-center">
@@ -67,22 +69,22 @@
                     dataType: "json",
                     data: json,
                     success: function (data) {
-                        console.log(data.includes("Error"))
                         if (data.includes("Error")) {
-                            console.log("ERROR")
-                            $("#topList").text(data);
                             $("#topList").fadeIn();
+                            $("#topError").text(data);
                             setTimeout(function () {
-                                $("#topList").fadeOut().empty();
+                                $("#topList").fadeOut();
                             }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
                         }
                         else {
                             $('#hotel' + hotel).remove();
                             $("#topList").fadeIn();
-                            $("#topList").text("The hotel and associated rooms were successfully deleted");
+                            $("#topSuccess").text("The hotel and associated rooms were successfully deleted");
                             setTimeout(function () {
-                                $("#topList").fadeOut().empty();
+                                $("#topList").fadeOut();
                             }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
                         }
                     },
                     error: function () {

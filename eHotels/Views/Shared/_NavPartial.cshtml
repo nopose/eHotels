@@ -1,0 +1,26 @@
+@using Microsoft.AspNetCore.Identity
+@using eHotels.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+<ul class="nav navbar-nav">
+    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        ApplicationUser user = await UserManager.GetUserAsync(User);
+
+        @if (user.Role.Equals(Constants.EMPLOYEE))
+        {
+            <li><a asp-area="" asp-controller="Home" asp-action="ManageHotels">Manage Hotels</a></li>
+        }
+        else
+        {
+            <li><a asp-area="" asp-controller="Customer" asp-action="MyBookings">My Bookings</a></li>
+        }
+    }
+</ul>
