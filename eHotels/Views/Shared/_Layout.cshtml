@@ -36,6 +36,7 @@
     </nav>
     <div class="container body-content">
         <div class="row">
+            @await Html.PartialAsync("_feedbackPartial")
             @RenderBody()
         </div>
         <hr />

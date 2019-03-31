@@ -9,6 +9,7 @@ namespace eHotels.Models
 {
     public class HotelViewModel
     {
+        public String Hid { get; set; }
 
         [Required]
         [Display(Name = "Hotel Name")]
@@ -65,9 +66,34 @@ namespace eHotels.Models
 
         public HotelViewModel(ApplicationDbContext context)
         {
+            initModel(context);
+        }
+
+        public void initModel(ApplicationDbContext context)
+        {
             DBManipulation DB = new DBManipulation(context);
             employees = DB.getEmployees();
             chains = DB.getHotelChains();
         }
+
+        public HotelViewModel(ApplicationDbContext context, Hotel hotel)
+        {
+            DBManipulation DB = new DBManipulation(context);
+            employees = DB.getEmployees();
+            chains = DB.getHotelChains();
+
+            HotelChainID = hotel.Hid;
+            HotelName = hotel.HotelName;
+            ManagerSSN = hotel.Manager;
+            Category = hotel.Category;
+            StreetNumber = hotel.StreetNumber;
+            StreetName = hotel.StreetName;
+            AptNumber = hotel.AptNumber;
+            City = hotel.City;
+            State = hotel.HState;
+            Zip = hotel.Zip;
+            Email = hotel.Email;
+        }
+
     }
 }

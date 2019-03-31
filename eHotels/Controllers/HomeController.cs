@@ -74,7 +74,7 @@ namespace eHotels.Controllers
             }
             else
             {
-                return RedirectToAction("AccessDenied");
+                return RedirectToAction("AccessDenied", "Account");
             }
         }
 
@@ -103,7 +103,7 @@ namespace eHotels.Controllers
             }
             else
             {
-                return RedirectToAction("AccessDenied");
+                return RedirectToAction("AccessDenied", "Account");
             }
         }
 
@@ -119,20 +119,65 @@ namespace eHotels.Controllers
                     Boolean insertResult = createHotel(model);
                     if (insertResult)
                     {
-                        return View(model);
+                        TempData["SuccessMessage"] = "Hotel created";
+                        return RedirectToAction("ManageHotels");
                     }
                     else
                     {
                         ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
                     }
-
                 }
+                model.initModel(_context);
                 // If we got this far, something failed, redisplay form
                 return View(model);
             }
             else
             {
-                return RedirectToAction("AccessDenied");
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EditHotel(String Hid)
+        {
+            if (isEmployee())
+            {
+                Hotel hotel = getHotel(Convert.ToInt32(Hid));
+                HotelViewModel model = new HotelViewModel(_context, hotel);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditHotel(HotelViewModel model)
+        {
+            if (isEmployee())
+            {
+                if (ModelState.IsValid)
+                {
+                    Boolean insertResult = updateHotel(convertModelToHotel(model));
+                    if (insertResult)
+                    {
+                        TempData["SuccessMessage"] = "Hotel updated";
+                        return RedirectToAction("ManageHotels");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                    }
+                }
+                // If we got this far, something failed, redisplay form
+                model.initModel(_context);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
             }
         }
 
@@ -165,6 +210,27 @@ namespace eHotels.Controllers
             }
         }
 
+        private Boolean updateHotel(Hotel model)
+        {
+            Object[] insertArray = new object[] { model.Hcid, model.HotelName, model.Manager, model.Category, model.StreetNumber, model.StreetName,
+                model.AptNumber, model.City,model.HState,model.Zip, model.Email, model.Hid };
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand(
+                   "UPDATE eHotel.Hotel SET hcid={0}, hotel_name={1}, manager={2}, category={3}, street_number={4}, street_name={5}, apt_number={6}, city={7}, h_state={8}, zip={9}, email={10} " +
+                   "WHERE hid={11}",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
         private Boolean deleteHotel(int Hid)
         {
             try
@@ -178,6 +244,22 @@ namespace eHotels.Controllers
                 //TODO better error handling
                 TempData["ErrorMessage"] = ex.MessageText;
                 return false;
+            }
+        }
+
+        private Hotel getHotel(int Hid)
+        {
+            try
+            {
+                //FINDQUERY
+                Hotel hotel = _context.Hotel.FromSql("SELECT * FROM eHotel.hotel WHERE Hid={0}", parameters: Hid).ToList()[0];
+                return hotel;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return null;
             }
         }
         #endregion
@@ -213,6 +295,7 @@ namespace eHotels.Controllers
         {
             return new Hotel
             {
+                Hid = Convert.ToInt32(model.Hid),
                 Hcid = model.HotelChainID,
                 HotelName = model.HotelName,
                 Manager = model.ManagerSSN,

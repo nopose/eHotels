@@ -14,7 +14,7 @@
     <div class="col-md-8">
         @foreach (var item in Model)
         {
-            <div class="panel panel-primary">
+            <div id="hotel@(item.Hid)" class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">@item.HotelName</h3>
                 </div>
@@ -22,18 +22,21 @@
                     <ul class="list-group">
                         @if (item.AptNumber != null)
                         {
-                        <li class="list-group-item">Address: @item.StreetNumber Apt. @item.AptNumber @item.StreetName, @item.HState, @item.Zip</li>
+                            <li class="list-group-item">Address: @item.StreetNumber Apt. @item.AptNumber @item.StreetName, @item.HState, @item.Zip</li>
                         }
                         else
                         {
-                        <li class="list-group-item">Address: @item.StreetNumber @item.StreetName, @item.HState, @item.Zip</li>
+                            <li class="list-group-item">Address: @item.StreetNumber @item.StreetName, @item.HState, @item.Zip</li>
                         }
                         <li class="list-group-item">Hotel chain: @item.Hc.HotelChainName</li>
                         <li class="list-group-item">Manager: @item.ManagerNavigation.SsnNavigation.FullName</li>
                         <li class="list-group-item">Category: @item.Category stars</li>
                         <li class="list-group-item">Number of rooms: @item.NumRooms</li>
                     </ul>
-                    <div class="col-md-1 text-center">
+                    <div class="col-md-2 col-md-offset-11">
+                        <a asp-area="" asp-controller="Home" asp-action="EditHotel" asp-route-Hid="@item.Hid">
+                            <i class="glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="top" title="Edit this hotel"></i>
+                        </a>
                         <a onclick="hotelDelete(@item.Hid)" class="text-center">
                             <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this hotel"></i>
                         </a>
@@ -43,7 +46,7 @@
         }
     </div>
 </div>
-    
+
 <div class="row">
     <div class="col-md-8">
         <a asp-area="" asp-controller="Home" asp-action="CreateHotel" class="btn btn-primary col-md-6">Add a new hotel</a>
@@ -58,7 +61,7 @@
             var result = confirm("Are you sure you want to delete this hotel (all of its rooms will also be deleted)?");
             if (result) {
                 var json = JSON.stringify({
-                    'Hid': /*hotel.toString()*/'10'
+                    'Hid': hotel.toString()
                 });
 
                 $.ajax({
@@ -92,6 +95,7 @@
                     }
                 });
             }
-        }         
+        }
     </script>
+    @await Html.PartialAsync("_feedbackScripts")
 }
