@@ -37,6 +37,12 @@ namespace eHotels.Data
             return _context.Hotelchain.ToList();
         }
 
+        public List<Hotelphone> getHotelPhones(int hid)
+        {
+            //FINDQUERY
+            return _context.Hotelphone.FromSql("SELECT * FROM eHotel.hotelphone WHERE hid={0}", parameters: hid).ToList();
+        }
+
         public List<Hotel> getHotels()
         {
             var hotelChains = getHotelChains();

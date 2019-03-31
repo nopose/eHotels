@@ -59,8 +59,12 @@ namespace eHotels.Models
         [Display(Name = "Contact email")]
         public string Email { get; set; }
 
+        [Display(Name = "Phone number")]
+        public string PhoneAdd { get; set; }
+
         public List<Person> employees { get; set; }
         public List<Hotelchain> chains { get; set; }
+        public List<Hotelphone> phones { get; set; }
 
         public HotelViewModel() { }
 
@@ -76,11 +80,15 @@ namespace eHotels.Models
             chains = DB.getHotelChains();
         }
 
+        public void initModel(ApplicationDbContext context, int hid)
+        {
+            initModel(context);
+            phones = new DBManipulation(context).getHotelPhones(hid);
+        }
+
         public HotelViewModel(ApplicationDbContext context, Hotel hotel)
         {
-            DBManipulation DB = new DBManipulation(context);
-            employees = DB.getEmployees();
-            chains = DB.getHotelChains();
+            initModel(context, hotel.Hid);
 
             HotelChainID = hotel.Hid;
             HotelName = hotel.HotelName;

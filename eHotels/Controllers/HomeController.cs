@@ -82,13 +82,20 @@ namespace eHotels.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteHotel([FromBody]Hotel data)
         {
-            if (deleteHotel(Convert.ToInt32(data.Hid)))
+            if (isEmployee())
             {
-                return Json("Success");
+                if (deleteHotel(Convert.ToInt32(data.Hid)))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the hotel");
+                }
             }
             else
             {
-                return Json("Error: Could not delete the hotel");
+                return RedirectToAction("AccessDenied", "Account");
             }
 
         }
@@ -158,6 +165,7 @@ namespace eHotels.Controllers
         {
             if (isEmployee())
             {
+                ModelState.Remove("PhoneAdd");
                 if (ModelState.IsValid)
                 {
                     Boolean insertResult = updateHotel(convertModelToHotel(model));
@@ -172,8 +180,52 @@ namespace eHotels.Controllers
                     }
                 }
                 // If we got this far, something failed, redisplay form
-                model.initModel(_context);
+                model.initModel(_context, Convert.ToInt32(model.Hid));
                 return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteHotelPhone([FromBody]Hotelphone data)
+        {
+            if (isEmployee())
+            {
+                if (deleteHotelPhone(data.Hid, data.PhoneNumber))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the phone number");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddHotelPhone([FromBody]Hotelphone data)
+        {
+            if (isEmployee())
+            {
+                Boolean insertResult = addHotelPhone(data.Hid, data.PhoneNumber);
+                if (insertResult)
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not add the phone number");
+                }
             }
             else
             {
@@ -260,6 +312,38 @@ namespace eHotels.Controllers
                 //TODO better error handling
                 TempData["ErrorMessage"] = ex.MessageText;
                 return null;
+            }
+        }
+
+        private Boolean deleteHotelPhone(int Hid, string PhoneNumber)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.HotelPhone WHERE hid={0} AND phone_number={1}", parameters: new object[] { Hid, PhoneNumber});
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean addHotelPhone(int Hid, string PhoneNumber)
+        {
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelphone VALUES ({0},{1})", parameters: new object[] { PhoneNumber, Hid });
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
             }
         }
         #endregion

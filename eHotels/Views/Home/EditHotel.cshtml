@@ -3,12 +3,17 @@
     ViewData["Title"] = "EditHotelView";
 }
 
-<h2>Edit an hotel</h2>
-
+<h2 id="toTop">Edit an hotel</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-4">
         <form method="post">
-            @Html.HiddenFor(Model => Model.Hid)
+            @Html.HiddenFor(Model => Model.Hid, new { id = "hotelHid" })
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
@@ -80,11 +85,164 @@
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-default">Save changes</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
         </form>
     </div>
 </div>
+<div class="row" style="padding-top:5%">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Hotel phones</h3>
+            </div>
+            <div class="panel-body">
+                <ul id="phoneList" class="list-group">
+                    @{ int index = 0;}
+                    @foreach (var item in Model.phones)
+                    {
+                        <!-- If modified, also modify the html generated in the addPhone javascript function -->
+                        <li class="list-group-item" id="phone@(index)">
+                            @item.PhoneNumber
+                            <a onclick="phoneDelete(@item.Hid, '@item.PhoneNumber', @index)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this phone number"></i>
+                            </a>
+                        </li>
+                        index++;
+                    }
+                </ul>
+                <div class="col-md-2">
+                    <a data-toggle="modal" data-target="#AddPhoneModal">
+                        <span data-toggle="tooltip" data-placement="top" title="Add a phone number">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- -----------------------Modal Windows-------------------------- -->
+<div class="modal fade" id="AddPhoneModal" tabindex="-1" role="dialog" aria-labelledby="ExerciseModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ExerciseModal">Add a phone number to this hotel</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label asp-for="PhoneAdd"></label>
+                    <input id="valuePhone" asp-for="PhoneAdd" class="form-control" />
+                    <span id="errorPhone" asp-validation-for="PhoneAdd" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <a onclick="phoneAdd()" class="btn btn-primary">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -----------------------Modal Windows-------------------------- -->
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function phoneDelete(hotel, phone, index) {
+            var result = confirm("Are you sure you want to delete this phone number?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Hid': hotel,
+                    'PhoneNumber': phone.toString()
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteHotelPhone", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#phone' + index).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The phone number was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+
+    var myIndex = 100;
+    function phoneAdd() {
+        $('#AddPhoneModal').modal('toggle');
+        var hotel = $('#hotelHid').val();
+        var phone = $('#valuePhone').val();
+        var json = JSON.stringify({
+            'Hid': hotel,
+            'PhoneNumber': phone.toString()
+        });
+
+        $.ajax({
+            url: '@Url.Action("AddHotelPhone", "Home")',
+            type: "POST",
+            headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: json,
+            success: function (data) {
+                if (data.includes("Error")) {
+                    $("#topList").fadeIn();
+                    $("#topError").text(data);
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+                else {
+                    $('#phoneList').append(
+                        `
+                        <li class="list-group-item" id="phone` + myIndex + `">`
+                        + phone +
+                        `<a onclick="phoneDelete(` + hotel + `, '` + phone + `', ` + myIndex +`)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this phone number"></i>
+                            </a>
+                        </li>
+                    `
+                    );
+                    $("#topList").fadeIn();
+                    $("#topSuccess").text("The phone number was successfully added");
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+            },
+            error: function () {
+                console.log("An error happened");
+            }
+        });
+    }
+    </script>
 }
