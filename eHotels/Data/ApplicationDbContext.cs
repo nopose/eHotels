@@ -525,8 +525,7 @@ namespace eHotels.Data
 
                 entity.Property(e => e.Landscape)
                     .IsRequired()
-                    .HasColumnName("landscape")
-                    .HasColumnType("bit(1)");
+                    .HasColumnName("landscape");
 
                 entity.Property(e => e.Price)
                     .HasColumnName("price")

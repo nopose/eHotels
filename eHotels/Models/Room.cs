@@ -19,7 +19,7 @@ namespace eHotels.Models
         public int Hid { get; set; }
         public decimal Price { get; set; }
         public short Capacity { get; set; }
-        public BitArray Landscape { get; set; }
+        public int Landscape { get; set; }
         public bool Isextandable { get; set; }
 
         public virtual Hotel H { get; set; }

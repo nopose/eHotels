@@ -70,7 +70,7 @@ CREATE TABLE eHotel.room (
 	hID INT NOT NULL,
 	price NUMERIC(8,2) NOT NULL,
 	capacity SMALLINT NOT NULL,
-	landscape BIT(1) NOT NULL,
+	landscape INT NOT NULL,
 	isExtandable BOOLEAN NOT NULL,	
 	
 	CONSTRAINT room_hotel_fkey FOREIGN KEY (hID)
@@ -84,6 +84,7 @@ CREATE TABLE eHotel.hotelChainPhone(
 	PRIMARY KEY (phone_number, hcID),
 	CONSTRAINT phone_hotelChain_fkey FOREIGN KEY (hcID)
       REFERENCES eHotel.hotelChain (hcID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.hotelChainEmail(
@@ -92,6 +93,7 @@ CREATE TABLE eHotel.hotelChainEmail(
 	PRIMARY KEY (email, hcID),
 	CONSTRAINT email_hotelChain_fkey FOREIGN KEY (hcID)
       REFERENCES eHotel.hotelChain (hcID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.hotelPhone(
@@ -100,6 +102,7 @@ CREATE TABLE eHotel.hotelPhone(
 	PRIMARY KEY (phone_number, hID),
 	CONSTRAINT phone_hotel_fkey FOREIGN KEY (hID)
       REFERENCES eHotel.hotel (hID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.amenity(
@@ -108,6 +111,7 @@ CREATE TABLE eHotel.amenity(
 	rID INT NOT NULL,
 	CONSTRAINT amenity_room_fkey FOREIGN KEY (rID)
       REFERENCES eHotel.room (rID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.damage(
@@ -116,6 +120,7 @@ CREATE TABLE eHotel.damage(
 	rID INT NOT NULL,
 	CONSTRAINT damage_room_fkey FOREIGN KEY (rID)
       REFERENCES eHotel.room (rID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.role(
@@ -124,6 +129,7 @@ CREATE TABLE eHotel.role(
 	PRIMARY KEY (role, employee_ssn),
 	CONSTRAINT role_employee_fkey FOREIGN KEY (employee_ssn)
       REFERENCES eHotel.employee (ssn) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE  eHotel.booking(

@@ -1,0 +1,64 @@
+﻿@model RoomViewModel
+@{
+    ViewData["Title"] = "CreateRoom";
+}
+
+<h2>Add a Room</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="HotelID"></label>
+                <br />
+                <select asp-for="HotelID">
+                    @foreach (Hotel h in Model.hotels)
+                    {
+                        <option value=@h.Hid>@h.HotelName</option>
+
+                    }
+                </select>
+                <span asp-validation-for="HotelID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomNum"></label>
+                <input asp-for="RoomNum" class="form-control" />
+                <span asp-validation-for="RoomNum" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Capacity"></label>
+                <input asp-for="Capacity" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Landscape"></label>
+                <br />
+                <select asp-for="Landscape">
+                    @foreach (NameValuePair item in Model.landscapes)
+                    {
+                        <option value=@item.Value>@item.Name</option>
+
+                    }
+                </select>
+                <span asp-validation-for="Landscape" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Isextandable"></label>
+                <input asp-for="Isextandable" class="form-control" />
+                <span asp-validation-for="Isextandable" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-default">Create room</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -52,7 +52,7 @@ namespace eHotels.Models.AccountViewModels
 
         [Required]
         [Display(Name = "State")]
-        [RegularExpression("[A-Z]{2}", ErrorMessage = "SSN should be exactly 2 capital letters")]
+        [RegularExpression("[A-Z]{2}", ErrorMessage = "State should be exactly 2 capital letters")]
         public string State { get; set; }
 
         [Required]

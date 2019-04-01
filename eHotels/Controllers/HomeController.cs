@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Authorization;
 using Npgsql;
+using System.Collections;
 
 namespace eHotels.Controllers
 {
@@ -235,6 +236,82 @@ namespace eHotels.Controllers
 
         #endregion
 
+        #region ManageRooms
+
+        [HttpGet]
+        public IActionResult ManageRooms()
+        {
+            if (isEmployee())
+            {
+                ManageRoomViewModel model = new ManageRoomViewModel(_context);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ManageRooms(ManageRoomViewModel model)
+        {
+            if (isEmployee())
+            {
+                model.initModel(_context, model.SelectedHotel);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CreateRoom()
+        {
+            if (isEmployee())
+            {
+                RoomViewModel model = new RoomViewModel(_context);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateRoom(RoomViewModel model)
+        {
+            if (isEmployee())
+            {
+                if (ModelState.IsValid)
+                {
+                    Boolean insertResult = createRoom(model);
+                    if (insertResult)
+                    {
+                        TempData["SuccessMessage"] = "Room created";
+                        return RedirectToAction("ManageRooms");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                    }
+                }
+                model.initModel(_context);
+                // If we got this far, something failed, redisplay form
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        #endregion
+
         #region DBLogic
         private Boolean createHotel(HotelViewModel model)
         {
@@ -346,6 +423,30 @@ namespace eHotels.Controllers
                 return false;
             }
         }
+
+        private Boolean createRoom(RoomViewModel model)
+        {
+            return insertRoom(convertModelToRoom(model));
+        }
+
+        private Boolean insertRoom(Room model)
+        {
+            try
+            {
+                //FINDQUERY
+                Object[] insertArray = new object[] { model.RoomNum, model.Hid, model.Price, model.Capacity, model.Landscape, model.Isextandable };
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Room (room_num,hid,price,capacity,landscape,isextandable)" +
+                   "VALUES ({0},{1},{2},{3},{4},{5})", parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
         #endregion
 
         #region Helpers
@@ -392,6 +493,19 @@ namespace eHotels.Controllers
                 HState = model.State,
                 Zip = model.Zip,
                 Email = model.Email
+            };
+        }
+
+        private Room convertModelToRoom(RoomViewModel model)
+        {
+            return new Room
+            {
+                Hid = model.HotelID,
+                RoomNum = model.RoomNum,
+                Price = model.Price,
+                Capacity = Convert.ToInt16(model.Capacity),
+                Landscape = model.Landscape,
+                Isextandable = model.Isextandable
             };
         }
 

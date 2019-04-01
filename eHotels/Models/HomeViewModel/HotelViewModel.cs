@@ -46,7 +46,7 @@ namespace eHotels.Models
 
         [Required]
         [Display(Name = "State")]
-        [RegularExpression("[A-Z]{2}", ErrorMessage = "SSN should be exactly 2 capital letters")]
+        [RegularExpression("[A-Z]{2}", ErrorMessage = "State should be exactly 2 capital letters")]
         public string State { get; set; }
 
         [Required]
@@ -73,19 +73,6 @@ namespace eHotels.Models
             initModel(context);
         }
 
-        public void initModel(ApplicationDbContext context)
-        {
-            DBManipulation DB = new DBManipulation(context);
-            employees = DB.getEmployees();
-            chains = DB.getHotelChains();
-        }
-
-        public void initModel(ApplicationDbContext context, int hid)
-        {
-            initModel(context);
-            phones = new DBManipulation(context).getHotelPhones(hid);
-        }
-
         public HotelViewModel(ApplicationDbContext context, Hotel hotel)
         {
             initModel(context, hotel.Hid);
@@ -101,6 +88,19 @@ namespace eHotels.Models
             State = hotel.HState;
             Zip = hotel.Zip;
             Email = hotel.Email;
+        }
+
+        public void initModel(ApplicationDbContext context)
+        {
+            DBManipulation DB = new DBManipulation(context);
+            employees = DB.getEmployees();
+            chains = DB.getHotelChains();
+        }
+
+        public void initModel(ApplicationDbContext context, int hid)
+        {
+            initModel(context);
+            phones = new DBManipulation(context).getHotelPhones(hid);
         }
 
     }

@@ -1,0 +1,76 @@
+﻿@model ManageRoomViewModel
+@{
+    ViewData["Title"] = "ManageRooms";
+}
+
+<h2>Manage the rooms</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <hr />
+            <div class="form-group">
+                <label asp-for="SelectedHotel"></label>
+                <br />
+                <select asp-for="SelectedHotel" onchange="submitForm()">
+                    @foreach (Hotel h in Model.hotels)
+                    {
+                        <option value=@h.Hid>@h.HotelName</option>
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        @foreach (Room r in Model.rooms)
+        {
+            <div id="hotel@(r.Rid)" class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Room #@r.RoomNum</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">Hotel : @Model.hotels.First(x => x.Hid == r.Hid)</li>
+                        <li class="list-group-item">Price: @r.Price $</li>
+                        <li class="list-group-item">Capacity: @r.Capacity</li>
+                        <li class="list-group-item">Landscape: @r.Landscape</li>
+                        <li class="list-group-item">Is extandable: @r.Isextandable</li>
+                    </ul>
+                    <div class="col-md-2 col-md-offset-11">
+                        <a asp-area="" asp-controller="Home" asp-action="EditRoom" asp-route-Rid="@r.Rid">
+                            <i class="glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="top" title="Edit this room"></i>
+                        </a>
+                        <a onclick="roomDelete(@r.Rid)" class="text-center">
+                            <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this room"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <a asp-area="" asp-controller="Home" asp-action="CreateRoom" class="btn btn-primary col-md-6">Add a new room</a>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_feedbackScripts")
+
+    <script>
+        function submitForm() {
+            $('form').submit();
+        }
+    </script>
+}

@@ -65,5 +65,26 @@ namespace eHotels.Data
                  .ThenInclude(m => m.SsnNavigation)
                 .ToList();
         }
+
+        public List<Room> getRooms()
+        {
+            //FINDQUERY
+            //EF Generated query
+            return _context.Room
+                .Include(r => r.Amenity)
+                .Include(r => r.Damage)
+                .ToList();
+        }
+
+        public List<Room> getRooms(int hid)
+        {
+            //FINDQUERY
+            //EF Generated query
+            return _context.Room
+                .Where(r => r.Hid == hid)
+                .Include(r => r.Amenity)
+                .Include(r => r.Damage)
+                .ToList();
+        }
     }
 }

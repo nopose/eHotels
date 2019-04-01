@@ -1,4 +1,4 @@
-
+--REMOVE ALL SERIAL VALUES
 --Hotel Chains
 
 INSERT INTO ehotel.hotelchain (hcid,hotel_chain_name,street_number,street_name,apt_number,city,hc_state,zip,num_hotels) 
@@ -84,7 +84,7 @@ VALUES (1,"TV",1),(2,"AC",2),(3,"Fridge",3),(4,"TV and AC",4),(5,"Fridge and min
 --damage
 --NEED TO WRITE ACTUAL DAMAGES TODO
 
-INSERT INTO ehotel.damage (did,amenity,rid) 
+INSERT INTO ehotel.damage (did,damage,rid) 
 VALUES (1,'TODO',146),
 (2,'TODO',102),
 (3,'TODO',191),

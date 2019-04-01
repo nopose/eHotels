@@ -17,6 +17,7 @@
         @if (user.Role.Equals(Constants.EMPLOYEE))
         {
             <li><a asp-area="" asp-controller="Home" asp-action="ManageHotels">Manage Hotels</a></li>
+            <li><a asp-area="" asp-controller="Home" asp-action="ManageRooms">Manage Rooms</a></li>
         }
         else
         {
