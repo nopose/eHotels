@@ -39,8 +39,16 @@ namespace eHotels.Models
         [Display(Name = "Extandable")]
         public bool Isextandable { get; set; }
 
+        [Display(Name = "Damage")]
+        public string DamageAdd { get; set; }
+
+        [Display(Name = "Amenity")]
+        public string AmenityAdd { get; set; }
+
         public List<Hotel> hotels { get; set; }
         public List<NameValuePair> landscapes { get; set; } = new List<NameValuePair> { new NameValuePair(0,"Sea View"), new NameValuePair(1,"Mountain View") };
+        public List<Damage> damages { get; set; }
+        public List<Amenity> amenities { get; set; }
 
         public RoomViewModel() { }
 
@@ -51,8 +59,9 @@ namespace eHotels.Models
 
         public RoomViewModel(ApplicationDbContext context, Room room)
         {
-            initModel(context);
+            initModel(context, room.Rid);
 
+            Rid = room.Rid.ToString();
             HotelID = room.Hid;
             RoomNum = room.RoomNum;
             Price = room.Price;
@@ -66,6 +75,14 @@ namespace eHotels.Models
             DBManipulation DB = new DBManipulation(context);
             hotels = DB.getHotels();
         }
+
+        public void initModel(ApplicationDbContext context, int rid)
+        {
+            initModel(context);
+            damages = new DBManipulation(context).getRoomDamage(rid);
+            amenities = new DBManipulation(context).getRoomAmenities(rid);
+        }
+
     }
 
     public class NameValuePair

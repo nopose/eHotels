@@ -310,6 +310,161 @@ namespace eHotels.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteRoom([FromBody]Room data)
+        {
+            if (isEmployee())
+            {
+                if (deleteRoom(Convert.ToInt32(data.Rid)))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the room");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpGet]
+        public IActionResult EditRoom(String Rid)
+        {
+            if (isEmployee())
+            {
+                Room room = getRoom(Convert.ToInt32(Rid));
+                RoomViewModel model = new RoomViewModel(_context, room);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditRoom(RoomViewModel model)
+        {
+            if (isEmployee())
+            {
+                //ModelState.Remove("PhoneAdd");
+                if (ModelState.IsValid)
+                {
+                    Boolean insertResult = updateRoom(convertModelToRoom(model));
+                    if (insertResult)
+                    {
+                        TempData["SuccessMessage"] = "Room updated";
+                        return RedirectToAction("ManageRooms");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                    }
+                }
+                // If we got this far, something failed, redisplay form
+                model.initModel(_context, Convert.ToInt32(model.Rid));
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteRoomDamage([FromBody]Damage data)
+        {
+            if (isEmployee())
+            {
+                if (deleteRoomDamage(data.Did))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the damage");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddRoomDamage([FromBody]Damage data)
+        {
+            if (isEmployee())
+            {
+                int insertResult = addRoomDamage(data.Rid, data.Damage1);
+                if (insertResult > 0)
+                {
+                    return Json(insertResult);
+                }
+                else
+                {
+                    return Json("Error: Could not add the damage");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteRoomAmenity([FromBody]Amenity data)
+        {
+            if (isEmployee())
+            {
+                if (deleteRoomAmenity(data.Aid))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the amenity");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddRoomAmenity([FromBody]Amenity data)
+        {
+            if (isEmployee())
+            {
+                int insertResult = addRoomAmenity(data.Rid, data.Amenity1);
+                if (insertResult > 0)
+                {
+                    return Json(insertResult);
+                }
+                else
+                {
+                    return Json("Error: Could not add the amenity");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
         #endregion
 
         #region DBLogic
@@ -434,8 +589,8 @@ namespace eHotels.Controllers
             try
             {
                 //FINDQUERY
-                Object[] insertArray = new object[] { model.RoomNum, model.Hid, model.Price, model.Capacity, model.Landscape, model.Isextandable };
-                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Room (room_num,hid,price,capacity,landscape,isextandable)" +
+                Object[] insertArray = new object[] { model.RoomNum, model.Hid, model.Price, model.Capacity, model.Isextandable, model.Landscape };
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Room (room_num,hid,price,capacity,isextandable,landscape)" +
                    "VALUES ({0},{1},{2},{3},{4},{5})", parameters: insertArray);
                 return true;
             }
@@ -444,6 +599,121 @@ namespace eHotels.Controllers
                 //TODO better error handling
                 TempData["ErrorMessage"] = ex.MessageText;
                 return false;
+            }
+        }
+
+        private Boolean deleteRoom(int Rid)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Room WHERE rid={0}", parameters: Rid);
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Room getRoom(int rid)
+        {
+            try
+            {
+                //FINDQUERY
+                Room room = _context.Room.FromSql("SELECT * FROM eHotel.room WHERE rid={0}", parameters: rid).ToList()[0];
+                return room;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return null;
+            }
+        }
+
+        private Boolean updateRoom(Room model)
+        {
+            try
+            {
+                //FINDQUERY
+                Object[] insertArray = new object[] { model.RoomNum, model.Hid, model.Price, model.Capacity, model.Isextandable, model.Landscape, model.Rid };
+                _context.Database.ExecuteSqlCommand("UPDATE eHotel.room SET room_num={0},hid={1},price={2},capacity={3},isextandable={4},landscape={5} WHERE rid={6}", parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean deleteRoomDamage(int Did)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Damage WHERE did={0}", parameters: Did);
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private int addRoomDamage(int Rid, string damage)
+        {
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Damage (damage,rid) VALUES ({0},{1})", parameters: new object[] { damage, Rid });
+                var damageResult = _context.Damage.FromSql("SELECT * FROM eHotel.Damage WHERE damage={0} AND rid={1}", parameters: new object[] { damage, Rid }).ToList()[0];
+                return damageResult.Did;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return -1;
+            }
+        }
+
+        private Boolean deleteRoomAmenity(int Aid)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Amenity WHERE aid={0}", parameters: Aid);
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private int addRoomAmenity(int Rid, string amenity)
+        {
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Amenity (amenity,rid) VALUES ({0},{1})", parameters: new object[] { amenity, Rid });
+                var amenityResult = _context.Amenity.FromSql("SELECT * FROM eHotel.Amenity WHERE amenity={0} AND rid={1}", parameters: new object[] { amenity, Rid }).ToList()[0];
+                return amenityResult.Aid;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return -1;
             }
         }
 
@@ -500,6 +770,7 @@ namespace eHotels.Controllers
         {
             return new Room
             {
+                Rid = Convert.ToInt32(model.Rid),
                 Hid = model.HotelID,
                 RoomNum = model.RoomNum,
                 Price = model.Price,

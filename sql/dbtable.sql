@@ -70,8 +70,8 @@ CREATE TABLE eHotel.room (
 	hID INT NOT NULL,
 	price NUMERIC(8,2) NOT NULL,
 	capacity SMALLINT NOT NULL,
-	landscape INT NOT NULL,
-	isExtandable BOOLEAN NOT NULL,	
+	isExtandable BOOLEAN NOT NULL,
+	landscape INT NOT NULL,	
 	
 	CONSTRAINT room_hotel_fkey FOREIGN KEY (hID)
       REFERENCES eHotel.hotel (hID) MATCH SIMPLE

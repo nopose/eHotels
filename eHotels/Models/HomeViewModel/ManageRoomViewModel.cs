@@ -32,6 +32,22 @@ namespace eHotels.Models
                 rooms = DB.getRooms();
             }
             hotels = DB.getHotels();
+            hotels.Insert(0, new Hotel
+            {
+                Hid = 0,
+                Hcid = -1,
+                HotelName = "All hotels",
+                Manager = -1,
+                Category =-1,
+                NumRooms = -1,
+                StreetNumber = -1,
+                StreetName = "null",
+                AptNumber = -1,
+                City = "null",
+                HState = "null",
+                Zip = "null",
+                Email = "null"
+            });
         }
     }
 }

@@ -1,0 +1,367 @@
+﻿@model RoomViewModel
+@{
+    ViewData["Title"] = "EditRoom";
+}
+
+<h2 id="toTop">Edit a Room</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            @Html.HiddenFor(Model => Model.Rid, new { id = "roomRid" })
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="HotelID"></label>
+                <br />
+                <select asp-for="HotelID">
+                    @foreach (Hotel h in Model.hotels)
+                    {
+                        <option value=@h.Hid>@h.HotelName</option>
+
+                    }
+                </select>
+                <span asp-validation-for="HotelID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomNum"></label>
+                <input asp-for="RoomNum" class="form-control" />
+                <span asp-validation-for="RoomNum" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Capacity"></label>
+                <input asp-for="Capacity" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Landscape"></label>
+                <br />
+                <select asp-for="Landscape">
+                    @foreach (NameValuePair item in Model.landscapes)
+                    {
+                        <option value=@item.Value>@item.Name</option>
+
+                    }
+                </select>
+                <span asp-validation-for="Landscape" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Isextandable"></label>
+                <input asp-for="Isextandable" class="form-control" />
+                <span asp-validation-for="Isextandable" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+        </form>
+    </div>
+</div>
+<div class="row" style="padding-top:5%">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Room damage</h3>
+            </div>
+            <div class="panel-body">
+                <ul id="damageList" class="list-group">
+                    @{ int index = 0;}
+                    @foreach (var item in Model.damages)
+                    {
+                        <!-- If modified, also modify the html generated in the addDamage javascript function -->
+                        <li class="list-group-item" id="damage@(index)">
+                            @item.Damage1
+                            <a onclick="damageDelete(@item.Did, @index)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this damage"></i>
+                            </a>
+                        </li>
+                        index++;
+                    }
+                </ul>
+                <div class="col-md-2">
+                    <a data-toggle="modal" data-target="#AddDamageModal">
+                        <span data-toggle="tooltip" data-placement="top" title="Add damage">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="padding-top:5%">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Room amenities</h3>
+            </div>
+            <div class="panel-body">
+                <ul id="amenityList" class="list-group">
+                    @{ int index2 = 0;}
+                    @foreach (var item in Model.amenities)
+                    {
+                        <!-- If modified, also modify the html generated in the addAmenity javascript function -->
+                        <li class="list-group-item" id="amenity@(index2)">
+                            @item.Amenity1
+                            <a onclick="amenityDelete(@item.Aid, @index2)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this amenity"></i>
+                            </a>
+                        </li>
+                        index2++;
+                    }
+                </ul>
+                <div class="col-md-2">
+                    <a data-toggle="modal" data-target="#AddAmenityModal">
+                        <span data-toggle="tooltip" data-placement="top" title="Add amenity">
+                            <i class="glyphicon glyphicon-plus"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- -----------------------Modal Windows-------------------------- -->
+<div class="modal fade" id="AddDamageModal" tabindex="-1" role="dialog" aria-labelledby="DamageModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="DamageModal">Add damage to this room</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label asp-for="DamageAdd"></label>
+                    <input id="valueDamage" asp-for="DamageAdd" class="form-control" />
+                    <span id="errorDamage" asp-validation-for="DamageAdd" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <a onclick="damageAdd()" class="btn btn-primary">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="AddAmenityModal" tabindex="-1" role="dialog" aria-labelledby="AmenityModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="AmenityModal">Add an amenity to this room</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label asp-for="AmenityAdd"></label>
+                    <input id="valueAmenity" asp-for="AmenityAdd" class="form-control" />
+                    <span id="errorAmenity" asp-validation-for="AmenityAdd" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <a onclick="amenityAdd()" class="btn btn-primary">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -----------------------Modal Windows-------------------------- -->
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function damageDelete(damage, index) {
+            var result = confirm("Are you sure you want to delete this damage?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Did': damage
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteRoomDamage", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#damage' + index).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The damage was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+
+    var myIndex = 100;
+    function damageAdd() {
+        $('#AddDamageModal').modal('toggle');
+        var room = $('#roomRid').val();
+        var damage = $('#valueDamage').val();
+        var json = JSON.stringify({
+            'Rid': room,
+            'Damage1': damage.toString()
+        });
+
+        $.ajax({
+            url: '@Url.Action("AddRoomDamage", "Home")',
+            type: "POST",
+            headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: json,
+            success: function (data) {
+                console.log(data);
+                if (data.toString().includes("Error")) {
+                    $("#topList").fadeIn();
+                    $("#topError").text(data);
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+                else {
+                    $('#damageList').append(
+                        `
+                        <li class="list-group-item" id="damage` + myIndex + `">`
+                        + damage +
+                        `<a onclick="damageDelete(` + data + `, ` + myIndex +`)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this damage"></i>
+                            </a>
+                        </li>
+                    `
+                    );
+                    $("#topList").fadeIn();
+                    $("#topSuccess").text("The damage was successfully added");
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+            },
+            error: function () {
+                console.log("An error happened");
+            }
+        });
+        }
+
+        function amenityDelete(amenity, index) {
+            var result = confirm("Are you sure you want to delete this amenity?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Aid': amenity
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteRoomAmenity", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#amenity' + index).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The amenity was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+
+    function amenityAdd() {
+        $('#AddAmenityModal').modal('toggle');
+        var room = $('#roomRid').val();
+        var amenity = $('#valueAmenity').val();
+        var json = JSON.stringify({
+            'Rid': room,
+            'Amenity1': amenity.toString()
+        });
+
+        $.ajax({
+            url: '@Url.Action("AddRoomAmenity", "Home")',
+            type: "POST",
+            headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: json,
+            success: function (data) {
+                console.log(data);
+                if (data.toString().includes("Error")) {
+                    $("#topList").fadeIn();
+                    $("#topError").text(data);
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+                else {
+                    $('#amenityList').append(
+                        `
+                        <li class="list-group-item" id="amenity` + myIndex + `">`
+                        + amenity +
+                        `<a onclick="amenityDelete(` + data + `, ` + myIndex +`)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this amenity"></i>
+                            </a>
+                        </li>
+                    `
+                    );
+                    $("#topList").fadeIn();
+                    $("#topSuccess").text("The amenity was successfully added");
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+            },
+            error: function () {
+                console.log("An error happened");
+            }
+        });
+    }
+    </script>
+}

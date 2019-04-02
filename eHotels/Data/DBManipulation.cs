@@ -86,5 +86,17 @@ namespace eHotels.Data
                 .Include(r => r.Damage)
                 .ToList();
         }
+
+        public List<Damage> getRoomDamage(int rid)
+        {
+            //FINDQUERY
+            return _context.Damage.FromSql("SELECT * FROM eHotel.damage WHERE rid={0}", parameters: rid).ToList();
+        }
+
+        public List<Amenity> getRoomAmenities(int rid)
+        {
+            //FINDQUERY
+            return _context.Amenity.FromSql("SELECT * FROM eHotel.amenity WHERE rid={0}", parameters: rid).ToList();
+        }
     }
 }

@@ -4,6 +4,12 @@
 }
 
 <h2>Manage the rooms</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-md-4">
@@ -23,23 +29,17 @@
     </div>
 </div>
 
-<div id="topList" class="row" style="display:none">
-    <div class="col-md-12">
-        <h3><span id="topError" class="label label-danger"></span></h3>
-        <h3><span id="topSuccess" class="label label-success"></span></h3>
-    </div>
-</div>
 <div class="row">
     <div class="col-md-8">
         @foreach (Room r in Model.rooms)
         {
-            <div id="hotel@(r.Rid)" class="panel panel-primary">
+            <div id="room@(r.Rid)" class="panel panel-primary">
                 <div class="panel-heading">
                     <h3 class="panel-title">Room #@r.RoomNum</h3>
                 </div>
                 <div class="panel-body">
                     <ul class="list-group">
-                        <li class="list-group-item">Hotel : @Model.hotels.First(x => x.Hid == r.Hid)</li>
+                        <li class="list-group-item">Hotel : @r.H.HotelName</li>
                         <li class="list-group-item">Price: @r.Price $</li>
                         <li class="list-group-item">Capacity: @r.Capacity</li>
                         <li class="list-group-item">Landscape: @r.Landscape</li>
@@ -71,6 +71,46 @@
     <script>
         function submitForm() {
             $('form').submit();
+        }
+
+        function roomDelete(room) {
+            var result = confirm("Are you sure you want to delete this room?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Rid': room.toString()
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteRoom", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#room' + room).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The room was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
         }
     </script>
 }
