@@ -27,6 +27,17 @@ namespace eHotels.Data
             return _context.Person.Include(p => p.Employee).Where(p => p.Employee != null).ToList();
         }
 
+        public List<Person> getEmployeesWithRoles()
+        {
+            //FINDQUERY
+            //EF Generated query
+            
+            return _context.Person
+                .Include(p => p.Employee)
+                    .ThenInclude(e => e.Role)
+                .Where(p => p.Employee != null).ToList();
+        }
+
         public List<Hotelchain> getHotelChains()
         {
             //FINDQUERY
