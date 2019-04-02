@@ -16,6 +16,15 @@ namespace eHotels.Data
             _context = context;
         }
 
+        public List<Person> getEmployee(int ssn)
+        {
+            //FINDQUERY
+            //EF Generated query
+            return _context.Person
+                .Include(p => p.Employee)
+                .Where(p => p.Employee != null && p.Ssn == ssn).ToList();
+        }
+
         public List<Person> getEmployees()
         {
             //FINDQUERY
@@ -108,6 +117,44 @@ namespace eHotels.Data
         {
             //FINDQUERY
             return _context.Amenity.FromSql("SELECT * FROM eHotel.amenity WHERE rid={0}", parameters: rid).ToList();
+        }
+
+        public List<Booking> getBookings()
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .ToList();
+        }
+
+        public List<Booking> getBookings(int hid)
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Where(b => b.R.Hid == hid)
+                .ToList();
+        }
+
+        public List<Booking> getBookingsFullNav()
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Include(b => b.CustomerSsnNavigation)
+                    .ThenInclude(c => c.SsnNavigation)
+                .ToList();
+        }
+
+        public List<Booking> getBookingsFullNav(int hid)
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Include(b => b.CustomerSsnNavigation)
+                    .ThenInclude(c => c.SsnNavigation)
+                .Where(b => b.R.Hid == hid)
+                .ToList();
         }
     }
 }
