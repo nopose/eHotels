@@ -81,9 +81,15 @@
                     <h6><em>**Note that the payment will be completed on site with an hotel's employee.**</em></h6>
                     <br />
                 </div>
-                <button type="button" class="btn btn-success btn-lg btn-block">
-                    Confirm booking   <span class="glyphicon glyphicon-chevron-right"></span>
-                </button>
+                <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    @Html.HiddenFor(x => x.Rid)
+                    @Html.HiddenFor(x => x.CustomerSsn)
+                    @Html.HiddenFor(x => x.StartDate)
+                    @Html.HiddenFor(x => x.EndDate)
+                    <button type="submit" class="btn btn-success btn-lg btn-block">
+                        Confirm booking   <span class="glyphicon glyphicon-chevron-right"></span>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
