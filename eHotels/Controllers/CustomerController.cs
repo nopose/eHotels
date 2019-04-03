@@ -45,16 +45,8 @@ namespace eHotels.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var user = getUser();
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
             var model = new SearchRoomViewModel(_context)
             {
-                UserId = user.SSN,
-
                 // Filter values
                 isUsingTodaysRooms = false,
                 StartDate = DateTime.Today.AddHours(16),
@@ -109,7 +101,7 @@ namespace eHotels.Controllers
 
                 List<Booking> Bookings = db.getBookingsByDates(s, e);
                 if (Bookings.Count > 0) {
-                    foreach(Booking b in Bookings) {
+                    foreach (Booking b in Bookings) {
                         RoomsToExclude.Add(b.Rid);
                     }
                 }
@@ -173,6 +165,48 @@ namespace eHotels.Controllers
             StatusMessage = "Exactly " + model.Rooms.Count.ToString() + " have been loaded.";
 
             return View(model);
+        }
+
+        #endregion
+
+        #region BookRoom
+
+        [HttpGet]
+        public IActionResult BookRoomFromSearch(Dictionary<string, string> parms)
+        {
+            DBManipulation db = new DBManipulation(_context);
+
+            string s_rid = "";
+            int rid = -1;
+            string s_startdate = "", s_enddate = "";
+            DateTime startdate = new DateTime(), enddate = new DateTime();
+
+            if (parms.TryGetValue("roomid", out s_rid))
+                rid = Int32.Parse(s_rid);
+            if (parms.TryGetValue("startdate", out s_startdate))
+                startdate = DateTime.Parse(s_startdate);
+            if (parms.TryGetValue("enddate", out s_enddate))
+                enddate = DateTime.Parse(s_enddate);
+
+            var user = getUser();
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            Person customer = db.getCustomer(user.SSN);
+            Room room = db.getRoom(rid);
+            Booking newBooking = new Booking()
+            {
+                CustomerSsnNavigation = customer.Customer,
+                CustomerSsn = customer.Ssn,
+                R = room,
+                Rid = room.Rid,
+                StartDate = startdate,
+                EndDate = enddate
+            };
+
+            return View(newBooking);
         }
 
         #endregion

@@ -16,6 +16,14 @@ namespace eHotels.Data
             _context = context;
         }
 
+        public Person getCustomer(int ssn)
+        {
+            //FINDQUERY
+            return _context.Person
+                .Include(p => p.Customer)
+                .Where(p => p.Customer != null && p.Ssn == ssn).First();
+        }
+
         public List<Person> getEmployee(int ssn)
         {
             //FINDQUERY
@@ -142,6 +150,18 @@ namespace eHotels.Data
         {
             //FINDQUERY
             return _context.Renting.FromSql("SELECT * FROM eHotel.renting WHERE (start_date <= {0} AND start_date >= {1}) OR (end_date >= {1} AND end_date <= {0})", e, s).ToList();
+        }
+
+        public Room getRoom(int rid)
+        {
+            //FINDQUERY
+            return _context.Room
+                .Include(r => r.H)
+                    .ThenInclude(h => h.Hc)
+                .Include(r => r.H)
+                    .ThenInclude(h => h.Hotelphone)
+                .Where(r => r.Rid == rid)
+                .First();
         }
 
         public List<Room> getRoomForSearch(string qry)

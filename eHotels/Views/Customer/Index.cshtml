@@ -141,15 +141,6 @@
                 </div>
             </div>
             <hr />
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label asp-for="isUsingTodaysRooms"></label>
-                        <input asp-for="isUsingTodaysRooms" class="checkbox" onclick="toggleControls(this);" />
-                        <span asp-validation-for="isUsingTodaysRooms" class="text-danger"></span>
-                    </div>
-                </div>
-            </div>
             <button type="submit" class="pull-right col-md-6 btn btn-default">Apply filters</button>
         </form>
     </div>
@@ -166,7 +157,7 @@
                 {
                     @foreach (Room r in Model.Rooms)
                     {
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <div id="@r.Rid" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                             <div class="box-part text-center">
 
                                 <!--<i class="fa fa-behance fa-3x" aria-hidden="true"></i>-->
@@ -186,21 +177,38 @@
                                     @if (r.Landscape == Constants.SEAVIEW)
                                     {
                                         <h5>View on the sea!</h5>
-                                    } else if (r.Landscape == Constants.MOUNTAINVIEW)
+                                    }
+                                    else if (r.Landscape == Constants.MOUNTAINVIEW)
                                     {
                                         <h5>View on the mountain!</h5>
                                     }
                                 </div>
 
                                 <div class="text">
-                                    @if (r.Amenity.Count > 0) { 
-                                        @foreach (Amenity a in r.Amenity) {
+                                    @if (r.Amenity.Count > 0)
+                                    {
+                                        @foreach (Amenity a in r.Amenity)
+                                        {
                                             <span>@a.Amenity1</span>
                                         }
-                                    } else { <span>No amentity is available for this room.</span> }
+                                    }
+                                    else
+                                    { <span>No amentity is available for this room.</span> }
                                 </div>
 
-                                <a href="#">Want to book it?</a>
+                                @{ 
+                                    Dictionary<string, string> parms = new Dictionary<string, string>
+                                        {
+                                            {"roomid", r.Rid.ToString() },
+                                            {"startdate", Model.StartDate.ToString() },
+                                            {"enddate", Model.EndDate.ToString() }
+                                        };
+                                }
+
+                                <a 
+                                 asp-controller="Customer"
+                                 asp-action="BookRoomFromSearch"
+                                 asp-all-route-data="@parms">Want to book it?</a>
 
                             </div>
                         </div>
@@ -219,14 +227,4 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
     @await Html.PartialAsync("_feedbackScripts")
 }
-
-<script>
-    function submitForm() {
-        $('form').submit();
-    }
-
-    function toggleControls(cb) {
-        alert(cb.checked);
-    }
-</script>
 

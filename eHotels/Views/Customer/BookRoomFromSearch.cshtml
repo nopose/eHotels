@@ -1,0 +1,91 @@
+﻿@model Booking
+@{
+    ViewData["Title"] = "BookRoomFromSearch";
+}
+
+<h4>Please confirm the booking so the room can be reserved for you.</h4>
+<hr />
+<div class="container">
+    <div class="row">
+        <div class="well col-xs-10 col-sm-10 col-md-6 col-xs-offset-1 col-sm-offset-1 col-md-offset-3">
+            <div class="row">
+                <div class="col-xs-6 col-sm-6 col-md-6">
+                    <address>
+                        <strong>@Model.R.H.HotelName</strong>
+                        <br>
+                        @Model.R.H.StreetNumber @Model.R.H.StreetName
+                        <br>
+                        @Model.R.H.City, @Model.R.H.HState @Model.R.H.Zip
+                        <br>
+                        @foreach (Hotelphone hp in Model.R.H.Hotelphone)
+                        {
+                            <abbr title="Phone">P:</abbr> @hp
+                        }
+                    </address>
+                </div>
+                <div class="col-xs-6 col-sm-6 col-md-6 text-right">
+                    <p>
+                        <em>Date: @DateTime.UtcNow.ToString("dddd, dd MMMM yyyy")</em>
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <h2>Room confirmation</h2>
+                </div>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Room #</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th class="text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-md-3"><em>@Model.R.RoomNum</em></td>
+                            <td class="col-md-4"> @Model.StartDate.ToString("dddd, dd MMMM yyyy") </td>
+                            <td class="col-md-4"> @Model.EndDate.ToString("dddd, dd MMMM yyyy") </td>
+                            <td class="col-md-1 text-center">$@Model.R.Price</td>
+                        </tr>
+                        <tr>
+                            <td>   </td>
+                            <td>   </td>
+                            <td class="text-right">
+                                <p>
+                                    <strong>Subtotal: </strong>
+                                </p>
+                                <p>
+                                    <strong>Tax: </strong>
+                                </p>
+                            </td>
+                            <td class="text-center">
+                                <p>
+                                    <strong>$@Model.R.Price</strong>
+                                </p>
+                                <p>
+                                    <strong>$@string.Format("{0:N2}", (Model.R.Price * (decimal)0.13))</strong>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>   </td>
+                            <td>   </td>
+                            <td class="text-right"><h4><strong>Total: </strong></h4></td>
+                            <td class="text-center text-danger"><h4><strong>$@string.Format("{0:N2}", (Model.R.Price * (decimal)1.13))</strong></h4></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-center">
+                    <h6><em>**Note that the payment will be completed on site with an hotel's employee.**</em></h6>
+                    <br />
+                </div>
+                <button type="button" class="btn btn-success btn-lg btn-block">
+                    Confirm booking   <span class="glyphicon glyphicon-chevron-right"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
