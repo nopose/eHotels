@@ -274,6 +274,70 @@ namespace eHotels.Controllers
 
         #endregion
 
+        #region
+
+        [HttpGet]
+        public IActionResult ManageRoles(string returnUrl = null)
+        {
+            if (isEmployee())
+            {
+                //FINDQUERY
+                ViewData["ReturnUrl"] = returnUrl;
+                RoleViewModel model = new RoleViewModel(_context);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteRole([FromBody]Role data)
+        {
+            if (isEmployee())
+            {
+                if (deleteRole(data.EmployeeSsn, data.Role1))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the role");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddRole([FromBody]Role data)
+        {
+            if (isEmployee())
+            {
+                Boolean insertResult = addRole(data.EmployeeSsn, data.Role1);
+                if (insertResult)
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not add the role");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        #endregion
+
         [HttpGet]
         [AllowAnonymous]
         public IActionResult AccessDenied()
@@ -395,6 +459,38 @@ namespace eHotels.Controllers
                 _context.Database.ExecuteSqlCommand(
                    "INSERT INTO eHotel.Employee VALUES ({0},{1},{2},{3})",
                    parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean deleteRole(int Ssn, string role)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Role WHERE employee_ssn={0} AND role={1}", parameters: new object[] { Ssn, role });
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean addRole(int Ssn, string role)
+        {
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Role VALUES ({0},{1})", parameters: new object[] { role, Ssn});
                 return true;
             }
             catch (PostgresException ex)

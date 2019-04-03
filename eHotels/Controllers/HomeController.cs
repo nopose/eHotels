@@ -34,9 +34,11 @@ namespace eHotels.Controllers
             _context = context;
             _cache = cache;
         }
-        
+
+        [AllowAnonymous]
         public IActionResult Index()
         {
+            var test = _context.Hotel.FromSql("SELECT DISTINCT ON (h_state) hid,hcid,h_state,hotel_name,manager,category,num_rooms,street_number,street_name,apt_number,city,zip,email FROM eHotel.Hotel").ToList();
             return View();
         }
 
@@ -467,6 +469,82 @@ namespace eHotels.Controllers
 
         #endregion
 
+        #region ManageBookings
+
+        [HttpGet]
+        public IActionResult ManageBookings()
+        {
+            if (isEmployee())
+            {
+                ManageBookingsViewModel model = new ManageBookingsViewModel(_context);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ManageBookings(ManageBookingsViewModel model)
+        {
+            if (isEmployee())
+            {
+                model.initModel(_context, model.SelectedHotel);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult RentBooking(String Bid)
+        {
+            if (isEmployee())
+            {
+                if(bookingToRenting(Convert.ToInt32(Bid)) > 0)
+                {
+                    TempData["SuccessMessage"] = "Payment successful, booking converted to renting";
+                    return RedirectToAction("ManageBookings");
+                }
+                else
+                {
+                    return RedirectToAction("Payment", new { Bid });
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Payment(String Bid)
+        {
+            if (isEmployee())
+            {
+                Booking model = getBooking(Convert.ToInt32(Bid));
+                if(model != null)
+                {
+                    return View(model);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "The booking doesn't exist";
+                    return RedirectToAction("ManageBookings");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        #endregion
+
         #region DBLogic
         private Boolean createHotel(HotelViewModel model)
         {
@@ -717,6 +795,54 @@ namespace eHotels.Controllers
             }
         }
 
+        private int bookingToRenting(int bid)
+        {
+            try
+            {
+                //FINDQUERY
+                //GET booking from bid
+                Booking booking = _context.Booking.FromSql("SELECT * FROM eHotel.Booking WHERE bid={0}", parameters: bid).ToList()[0];
+
+                //insert new renting created from the booking
+                Object[] insertArray = new object[] { booking.Rid, booking.CustomerSsn, getUser().SSN, booking.StartDate, booking.EndDate };
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Renting (rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4})", parameters: insertArray);
+
+                //get inserted renting
+                Renting rentingResult = _context.Renting.FromSql("SELECT * FROM eHotel.Renting WHERE rid={0} AND customer_ssn={1} AND employee_ssn={2} AND start_date={3} AND end_date={4}", parameters: insertArray).ToList()[0];
+
+                //delete old booking
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Booking WHERE bid={0}", parameters: booking.Bid);
+
+                //insert old booking in the archive table
+                insertArray = new object[] { booking.Bid, booking.Rid, booking.CustomerSsn, booking.StartDate, booking.EndDate };
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.bookingarc (baid,rid,customer_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4})", parameters: insertArray);
+
+                return rentingResult.Rentid;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return -1;
+            }
+        }
+
+        private Booking getBooking(int bid)
+        {
+            try
+            {
+                //FINDQUERY
+                //GET booking from bid
+                Booking booking = _context.Booking.FromSql("SELECT * FROM eHotel.Booking WHERE bid={0}", parameters: bid).ToList()[0];
+                return booking;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return null;
+            }
+        }
         #endregion
 
         #region Helpers

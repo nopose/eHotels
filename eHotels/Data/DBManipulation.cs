@@ -16,6 +16,15 @@ namespace eHotels.Data
             _context = context;
         }
 
+        public List<Person> getEmployee(int ssn)
+        {
+            //FINDQUERY
+            //EF Generated query
+            return _context.Person
+                .Include(p => p.Employee)
+                .Where(p => p.Employee != null && p.Ssn == ssn).ToList();
+        }
+
         public List<Person> getEmployees()
         {
             //FINDQUERY
@@ -25,6 +34,17 @@ namespace eHotels.Data
             //LEFT JOIN ehotel.employee AS "p.Employee" ON p.ssn = "p.Employee".ssn
             //WHERE "p.Employee".ssn IS NOT NULL
             return _context.Person.Include(p => p.Employee).Where(p => p.Employee != null).ToList();
+        }
+
+        public List<Person> getEmployeesWithRoles()
+        {
+            //FINDQUERY
+            //EF Generated query
+            
+            return _context.Person
+                .Include(p => p.Employee)
+                    .ThenInclude(e => e.Role)
+                .Where(p => p.Employee != null).ToList();
         }
 
         public List<Hotelchain> getHotelChains()
@@ -99,6 +119,7 @@ namespace eHotels.Data
             return _context.Amenity.FromSql("SELECT * FROM eHotel.amenity WHERE rid={0}", parameters: rid).ToList();
         }
 
+
         public List<string> getHotelCities()
         {
             //FINDQUERY
@@ -123,9 +144,48 @@ namespace eHotels.Data
             return _context.Renting.FromSql("SELECT * FROM eHotel.renting WHERE (start_date <= {0} AND start_date >= {1}) OR (end_date >= {1} AND end_date <= {0})", e, s).ToList();
         }
 
-        public List<Room> getRoomForSearch(string qry) {
+        public List<Room> getRoomForSearch(string qry)
+        {
             //FINDQUERY
             return _context.Room.FromSql(qry).Include(r => r.H).Include(r => r.Amenity).ToList();
+        }
+
+        public List<Booking> getBookings()
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .ToList();
+        }
+
+        public List<Booking> getBookings(int hid)
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Where(b => b.R.Hid == hid)
+                .ToList();
+        }
+
+        public List<Booking> getBookingsFullNav()
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Include(b => b.CustomerSsnNavigation)
+                    .ThenInclude(c => c.SsnNavigation)
+                .ToList();
+        }
+
+        public List<Booking> getBookingsFullNav(int hid)
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Include(b => b.CustomerSsnNavigation)
+                    .ThenInclude(c => c.SsnNavigation)
+                .Where(b => b.R.Hid == hid)
+                .ToList();
         }
     }
 }

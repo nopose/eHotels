@@ -1,0 +1,179 @@
+﻿@model RoleViewModel
+@{
+    ViewData["Title"] = "ManageRoles";
+}
+
+<h2 id="toTop">Manage the employees roles</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
+
+
+<div class="row" style="padding-top:5%">
+    <div class="col-md-4">
+        @foreach (var employee in Model.employees)
+        {
+            <h3 class="panel-title">Name: @employee.FullName</h3>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">Roles</h4>
+                </div>
+                <div class="panel-body">
+                    <ul id="roleList@(employee.Ssn)" class="list-group">
+                        @{ int index = 0;}
+                        @foreach (var r in employee.Employee.Role)
+                        {
+                            <!-- If modified, also modify the html generated in the addRole javascript function -->
+                            <li class="list-group-item" id="role@(employee.Ssn)@(index)">
+                                @r.Role1
+                                <a onclick="roleDelete(@employee.Ssn, '@r.Role1', @(employee.Ssn)@(index))" class="text-center col-md-2">
+                                    <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this role"></i>
+                                </a>
+                            </li>
+                            index++;
+                        }
+                    </ul>
+                    <div class="col-md-2">
+                        <a data-toggle="modal" data-target="#AddRoleModal" onclick="selectSsn(@employee.Ssn)">
+                            <span data-toggle="tooltip" data-placement="top" title="Add a role">
+                                <i class="glyphicon glyphicon-plus"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<!-- -----------------------Modal Windows-------------------------- -->
+<div class="modal fade" id="AddRoleModal" tabindex="-1" role="dialog" aria-labelledby="RoleModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="RoleModal">Add a role to this employee</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label asp-for="RoleAdd"></label>
+                    <input id="valueRole" asp-for="RoleAdd" class="form-control" />
+                    <span id="errorRole" asp-validation-for="RoleAdd" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <a onclick="roleAdd()" class="btn btn-primary">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -----------------------Modal Windows-------------------------- -->
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function roleDelete(ssn, role, index) {
+            var result = confirm("Are you sure you want to delete this role?");
+            if (result) {
+                var json = JSON.stringify({
+                    'EmployeeSsn': ssn,
+                    'Role1': role
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteRole", "Account")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#role' + selectedSSN.toString() + myIndex).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The role was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+
+        var myIndex = 100;
+        var selectedSSN = 0;
+    function roleAdd() {
+        $('#AddRoleModal').modal('toggle');
+        var role = $('#valueRole').val();
+        var json = JSON.stringify({
+            'EmployeeSsn': selectedSSN,
+            'Role1': role
+        });
+
+        $.ajax({
+            url: '@Url.Action("AddRole", "Account")',
+            type: "POST",
+            headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: json,
+            success: function (data) {
+                if (data.includes("Error")) {
+                    $("#topList").fadeIn();
+                    $("#topError").text(data);
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+                else {
+                    $('#roleList' + selectedSSN.toString()).append(
+                        `
+                        <li class="list-group-item" id="role` + selectedSSN.toString() + myIndex + `">`
+                        + role +
+                        `<a onclick="roleDelete(` + selectedSSN.toString() + `, '` + role + `', ` + myIndex +`)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this role"></i>
+                            </a>
+                        </li>
+                    `
+                    );
+                    $("#topList").fadeIn();
+                    $("#topSuccess").text("The role was successfully added");
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+            },
+            error: function () {
+                console.log("An error happened");
+            }
+        });
+        }
+
+        function selectSsn(ssn) {
+            selectedSSN = ssn;
+            console.log(selectedSSN);
+        }
+    </script>
+}
