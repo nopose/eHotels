@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -207,6 +208,46 @@ namespace eHotels.Controllers
             };
 
             return View(newBooking);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BookRoomFromSearch(Booking newBooking)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    /*_context.Add(newBooking);
+                    await _context.SaveChangesAsync();*/
+
+                    Object[] insertArray = new object[] { newBooking.Rid, newBooking.CustomerSsn, newBooking.StartDate, newBooking.EndDate };
+                    _context.Database.ExecuteSqlCommand(
+                       "INSERT INTO eHotel.booking (rid, customer_ssn, start_date, end_date)" +
+                       "VALUES ({0},{1},{2},{3})",
+                       parameters: insertArray);
+
+                    TempData["SuccessMessage"] = "Booking successfully added to your account!!";
+                    return RedirectToAction("CustomerBookings");
+                }
+            }
+            catch (Npgsql.PostgresException /* ex */)
+            {
+                //Log the error (uncomment ex variable name and write a log.
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists " +
+                    "see your system administrator.");
+            }
+            return View(newBooking);
+        }
+
+        #endregion
+
+        #region CustomerBookings
+
+        public IActionResult CustomerBookings()
+        {
+            return View(new List<Booking>());
         }
 
         #endregion
