@@ -505,13 +505,35 @@ namespace eHotels.Controllers
         {
             if (isEmployee())
             {
-                
                 if(bookingToRenting(Convert.ToInt32(Bid)) > 0)
                 {
-                    return RedirectToAction("Payment", new { rentid = -1 });
+                    TempData["SuccessMessage"] = "Payment successful, booking converted to renting";
+                    return RedirectToAction("ManageBookings");
                 }
                 else
                 {
+                    return RedirectToAction("Payment", new { Bid });
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult Payment(String Bid)
+        {
+            if (isEmployee())
+            {
+                Booking model = getBooking(Convert.ToInt32(Bid));
+                if(model != null)
+                {
+                    return View(model);
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "The booking doesn't exist";
                     return RedirectToAction("ManageBookings");
                 }
             }
@@ -802,6 +824,23 @@ namespace eHotels.Controllers
                 //TODO better error handling
                 TempData["ErrorMessage"] = ex.MessageText;
                 return -1;
+            }
+        }
+
+        private Booking getBooking(int bid)
+        {
+            try
+            {
+                //FINDQUERY
+                //GET booking from bid
+                Booking booking = _context.Booking.FromSql("SELECT * FROM eHotel.Booking WHERE bid={0}", parameters: bid).ToList()[0];
+                return booking;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return null;
             }
         }
         #endregion

@@ -28,7 +28,7 @@
                             To: @item.EndDate.ToString("dd/MM/yyyy")
                         </li>
                         <div class="col-md-4">
-                            <a asp-area="" asp-controller="Home" asp-action="RentBooking" class="btn btn-primary col-md-12" asp-route-Bid="@item.Bid">Convert to renting</a>
+                            <a asp-area="" asp-controller="Home" asp-action="Payment" class="btn btn-primary col-md-12" asp-route-Bid="@item.Bid">Convert to renting</a>
                         </div>
                         <div class="col-md-2 col-md-offset-6">
                             <a asp-area="" asp-controller="Home" asp-action="DeleteBooking" asp-route-Bid="@item.Bid">
@@ -41,3 +41,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_feedbackScripts")
+}
