@@ -19,6 +19,6 @@ GROUP BY h.h_state;
 
 
 CREATE VIEW ehotel.capacity_room AS 
-SELECT h.hotel_name, r.room_num, r.capacity
+SELECT h.hid, h.hotel_name, r.rid, r.room_num, r.capacity
 FROM ehotel.room AS r, ehotel.hotel AS h
 WHERE r.hid = h.hid;

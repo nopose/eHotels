@@ -183,10 +183,10 @@
                                 </div>
 
                                 <div>
-                                    @if (r.Landscape == 0)
+                                    @if (r.Landscape == Constants.SEAVIEW)
                                     {
-                                        <h5>View on the lake!</h5>
-                                    } else if (r.Landscape == 1)
+                                        <h5>View on the sea!</h5>
+                                    } else if (r.Landscape == Constants.MOUNTAINVIEW)
                                     {
                                         <h5>View on the mountain!</h5>
                                     }

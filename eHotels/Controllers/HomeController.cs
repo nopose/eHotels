@@ -38,7 +38,6 @@ namespace eHotels.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            var test = _context.Hotel.FromSql("SELECT DISTINCT ON (h_state) hid,hcid,h_state,hotel_name,manager,category,num_rooms,street_number,street_name,apt_number,city,zip,email FROM eHotel.Hotel").ToList();
             return View();
         }
 

@@ -147,6 +147,18 @@ namespace eHotels.Data
         public List<Room> getRoomForSearch(string qry)
         {
             //FINDQUERY
+            /*
+                SELECT "r.Amenity".aid, "r.Amenity".amenity, "r.Amenity".rid
+                FROM ehotel.amenity AS "r.Amenity"
+                INNER JOIN (
+                    SELECT DISTINCT r0.rid
+                    FROM (
+                        SELECT rid, room_num, room.hid, price, capacity, isExtandable, landscape FROM eHotel.room INNER JOIN eHotel.hotel ON room.hid = hotel.hid WHERE 0=0 AND capacity >= 5 AND rid NOT IN (17, 17)
+                    ) AS r0
+                    INNER JOIN ehotel.hotel AS "r.H0" ON r0.hid = "r.H0".hid
+                ) AS t ON "r.Amenity".rid = t.rid
+                ORDER BY t.rid
+             */
             return _context.Room.FromSql(qry).Include(r => r.H).Include(r => r.Amenity).ToList();
         }
 

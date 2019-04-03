@@ -31,6 +31,8 @@ namespace eHotels.Data
         public virtual DbSet<Rentingarc> Rentingarc { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Room> Room { get; set; }
+        public virtual DbSet<ViewOne> ViewOne { get; set; }
+        public virtual DbSet<ViewTwo> ViewTwo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -537,6 +539,49 @@ namespace eHotels.Data
                     .WithMany(p => p.Room)
                     .HasForeignKey(d => d.Hid)
                     .HasConstraintName("room_hotel_fkey");
+            });
+
+            modelBuilder.Entity<ViewOne>(entity =>
+            {
+                entity.HasKey(e => e.HState);
+
+                entity.ToTable("num_hotel_area", "ehotel");
+
+                entity.Property(e => e.HState)
+                    .IsRequired()
+                    .HasColumnName("h_state")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RoomCount).HasColumnName("room_count")
+                    .IsRequired()
+                    .HasColumnType("bigint");
+            });
+
+
+            modelBuilder.Entity<ViewTwo>(entity =>
+            {
+                entity.HasKey(e => e.Rid);
+
+                entity.ToTable("capacity_room", "ehotel");
+
+                entity.Property(e => e.HotelName)
+                    .IsRequired()
+                    .HasColumnName("hotel_name")
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.RoomNum)
+                    .HasColumnName("room_num")
+                    .IsRequired();
+
+                entity.Property(e => e.Rid)
+                    .HasColumnName("rid");
+
+                entity.Property(e => e.Hid)
+                    .HasColumnName("hid");
+
+                entity.Property(e => e.Capacity)
+                    .HasColumnName("capacity")
+                    .HasColumnType("smallint");
             });
 
             modelBuilder.HasSequence<int>("amenity_aid_seq");

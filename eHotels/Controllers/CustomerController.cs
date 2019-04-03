@@ -82,6 +82,8 @@ namespace eHotels.Controllers
             DateTime s = model.StartDate.Date.AddHours(16);
             DateTime e = model.EndDate.Date.AddHours(12);
 
+            model.Rooms = new List<Room>();
+
             model.initModel(_context);
 
             if (!ModelState.IsValid)
@@ -89,16 +91,16 @@ namespace eHotels.Controllers
                 return View(model);
             }
 
-            if (!(DateTime.Compare(s, new DateTime()) > 0)) {
-                ModelState.AddModelError("", "The start date must be greater or equal than today.");
+            if (!(DateTime.Compare(s, DateTime.Now) > 0)) {
+                ModelState.AddModelError("StartDate", "The start date must be greater or equal than today.");
                 return View(model);
             }
 
-            if (!(DateTime.Compare(e, new DateTime()) > 0)) {
-                ModelState.AddModelError("", "The end date must be greater or equal than today.");
+            if (!(DateTime.Compare(e, DateTime.Now) > 0)) {
+                ModelState.AddModelError("EndDate", "The end date must be greater or equal than today.");
                 return View(model);
             } else if (!(DateTime.Compare(e, model.StartDate) > 0)) {
-                ModelState.AddModelError("", "The end date must be greater (by at least 1 day) than the start date.");
+                ModelState.AddModelError("EndDate", "The end date must be greater (by at least 1 day) than the start date.");
                 return View(model);
             }
 
@@ -143,8 +145,21 @@ namespace eHotels.Controllers
                     qry += " AND price <= " + model.PriceOfRooms;
                 }
 
-                foreach (int r in RoomsToExclude) {
-                    qry += " AND room.rid <> " + r;
+                if (RoomsToExclude.Count > 0)
+                {
+                    bool first = true;
+                    qry += " AND rid NOT IN (";
+                    foreach (int r in RoomsToExclude)
+                    {
+                        if (first)
+                        {
+                            qry += r;
+                            first = false;
+                        }
+                        else
+                            qry += ", " + r;
+                    }
+                    qry += ")";
                 }
 
                 model.Rooms = db.getRoomForSearch(qry);
