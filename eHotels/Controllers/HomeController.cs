@@ -521,20 +521,38 @@ namespace eHotels.Controllers
         }
 
         [HttpGet]
-        public IActionResult Payment(String Bid)
+        public IActionResult Payment(Dictionary<string, string> parms)
         {
             if (isEmployee())
             {
-                Booking model = getBooking(Convert.ToInt32(Bid));
-                if(model != null)
+                DBManipulation db = new DBManipulation(_context);
+                int rid = Convert.ToInt32(parms.GetValueOrDefault("roomid"));
+                int bid = Convert.ToInt32(parms.GetValueOrDefault("bid"));
+                DateTime startdate = DateTime.Parse(parms.GetValueOrDefault("startdate"));
+                DateTime enddate = DateTime.Parse(parms.GetValueOrDefault("enddate"));
+
+                Room room = db.getRoom(rid);
+
+                Booking newBooking = new Booking()
                 {
-                    return View(model);
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "The booking doesn't exist";
-                    return RedirectToAction("ManageBookings");
-                }
+                    Bid = bid,
+                    R = room,
+                    Rid = room.Rid,
+                    StartDate = startdate,
+                    EndDate = enddate
+                };
+                PaymentViewModel model = new PaymentViewModel(newBooking);
+                return View(model);
+                //Booking model = getBooking(Convert.ToInt32(Bid));
+                //if(model != null)
+                //{
+                //    return View(model);
+                //}
+                //else
+                //{
+                //    TempData["ErrorMessage"] = "The booking doesn't exist";
+                //    return RedirectToAction("ManageBookings");
+                //}
             }
             else
             {

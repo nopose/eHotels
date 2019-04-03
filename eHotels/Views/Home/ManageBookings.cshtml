@@ -28,7 +28,18 @@
                             To: @item.EndDate.ToString("dd/MM/yyyy")
                         </li>
                         <div class="col-md-4">
-                            <a asp-area="" asp-controller="Home" asp-action="Payment" class="btn btn-primary col-md-12" asp-route-Bid="@item.Bid">Convert to renting</a>
+                            @{
+                                Dictionary<string, string> parms = new Dictionary<string, string>
+                                {
+                                    {"roomid", item.R.Rid.ToString() },
+                                    {"startdate", item.StartDate.ToString() },
+                                    {"enddate", item.EndDate.ToString() },
+                                    {"bid", item.Bid.ToString() }
+                                };
+                            }
+                            <a asp-controller="Home"
+                               asp-action="Payment"
+                               asp-all-route-data="@parms" class="btn btn-primary col-md-12">Convert to renting</a>
                         </div>
                         <div class="col-md-2 col-md-offset-6">
                             <a asp-area="" asp-controller="Home" asp-action="DeleteBooking" asp-route-Bid="@item.Bid">
