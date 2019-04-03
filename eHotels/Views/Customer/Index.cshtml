@@ -1,0 +1,232 @@
+﻿@model SearchRoomViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    .box{
+        padding:30px 0px;
+    }
+
+    .box-part {
+        background: #FFF;
+        border-radius: 10px;
+        padding: 30px 10px;
+        margin: 30px 0px;
+        border: 1px solid lightgray;
+        box-shadow: 0 8px 6px -6px black;
+    }
+
+    .box-part:hover {
+        background: #333;
+    }
+
+    .box-part:hover .fa,
+    .box-part:hover .title,
+    .box-part:hover .text,
+    .box-part:hover h5,
+    .box-part:hover h1,
+    .box-part:hover a {
+        color: #FFF;
+        -webkit-transition: all 1s ease-out;
+        -moz-transition: all 1s ease-out;
+        -o-transition: all 1s ease-out;
+        transition: all 1s ease-out;
+    }
+
+    .text {
+        margin: 20px 0px;
+    }
+
+    .fa {
+        color: #4183D7;
+    }
+</style>
+
+<h2>Advanced room search</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
+
+<br />
+<h4>Filter your rooms (optional)</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12 center-block">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            <div class="row">
+                <div class="col-md-4 center-block">
+                    <div class="form-group">
+                        <label asp-for="ChainSelected"></label>
+                        <br />
+                        <select asp-for="ChainSelected" class="form-control">
+                            <option value=""></option>
+                            @foreach (Hotelchain hc in Model.HotelChains)
+                            {
+                                <option value=@hc.Hcid>@hc.HotelChainName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 center-block">
+                    <div class="form-group">
+                        <label asp-for="StateSelected"></label>
+                        <br />
+                        <select asp-for="StateSelected" class="form-control">
+                            <option value=""></option>
+                            @foreach (string s in Model.States)
+                            {
+                                <option value=@s>@s</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4 center-block">
+                    <div class="form-group">
+                        <label asp-for="CategorySelected"></label>
+                        <br />
+                        <select asp-for="CategorySelected" class="form-control">
+                            <option value=""></option>
+                            @foreach (int c in Model.CategoryOfHotel)
+                            {
+                                <option value=@c>@c</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-4 center-block">
+                    <div class="form-group">
+                        <label asp-for="Capacity"></label>
+                        <input asp-for="Capacity" class="form-control" />
+                        <span asp-validation-for="Capacity" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4 center-block">
+                    <div class="form-group">
+                        <label asp-for="NumberOfRooms"></label>
+                        <input asp-for="NumberOfRooms" class="form-control" />
+                        <span asp-validation-for="NumberOfRooms" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4 center-block">
+                    <div class="form-group">
+                        <label asp-for="PriceOfRooms"></label>
+                        <input asp-for="PriceOfRooms" class="form-control" />
+                        <span asp-validation-for="PriceOfRooms" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-6 center-block">
+                    <div class="form-group">
+                        <label asp-for="StartDate"></label>
+                        <input asp-for="StartDate" class="form-control" />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6 center-block">
+                    <div class="form-group">
+                        <label asp-for="EndDate"></label>
+                        <input asp-for="EndDate" class="form-control" />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="isUsingTodaysRooms"></label>
+                        <input asp-for="isUsingTodaysRooms" class="checkbox" onclick="toggleControls(this);" />
+                        <span asp-validation-for="isUsingTodaysRooms" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="pull-right col-md-6 btn btn-default">Apply filters</button>
+        </form>
+    </div>
+</div>
+
+<br />
+<h4>Filtered rooms</h4>
+<hr />
+
+<div class="box">
+    <div class="container">
+        <div class="row">
+                @if (Model.Rooms.Count > 0)
+                {
+                    @foreach (Room r in Model.Rooms)
+                    {
+                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                            <div class="box-part text-center">
+
+                                <!--<i class="fa fa-behance fa-3x" aria-hidden="true"></i>-->
+
+                                <div class="title">
+                                    <h3><u>@r.H.HotelName</u></h3>
+                                    <h4>Room #@r.RoomNum</h4>
+                                </div>
+
+                                <div>
+                                    <h5 class="text-muted">Capacity - @r.Capacity</h5>
+                                    
+                                    <h1 style="padding:3% 0 3% 0;">$@r.Price</h1>
+                                </div>
+
+                                <div>
+                                    @if (r.Landscape == 0)
+                                    {
+                                        <h5>View on the lake!</h5>
+                                    } else if (r.Landscape == 1)
+                                    {
+                                        <h5>View on the mountain!</h5>
+                                    }
+                                </div>
+
+                                <div class="text">
+                                    @if (r.Amenity.Count > 0) { 
+                                        @foreach (Amenity a in r.Amenity) {
+                                            <span>@a.Amenity1</span>
+                                        }
+                                    } else { <span>No amentity is available for this room.</span> }
+                                </div>
+
+                                <a href="#">Want to book it?</a>
+
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <h3>No filter has been applied yet.</h3>
+                }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @await Html.PartialAsync("_feedbackScripts")
+}
+
+<script>
+    function submitForm() {
+        $('form').submit();
+    }
+
+    function toggleControls(cb) {
+        alert(cb.checked);
+    }
+</script>
+

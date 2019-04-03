@@ -98,5 +98,34 @@ namespace eHotels.Data
             //FINDQUERY
             return _context.Amenity.FromSql("SELECT * FROM eHotel.amenity WHERE rid={0}", parameters: rid).ToList();
         }
+
+        public List<string> getHotelCities()
+        {
+            //FINDQUERY
+            return _context.Hotel.Select(h => h.City).Distinct().ToList();
+        }
+
+        public List<string> getHotelStates()
+        {
+            //FINDQUERY
+            return _context.Hotel.Select(h => h.HState).Distinct().ToList();
+        }
+
+        public List<Booking> getBookingsByDates(DateTime s, DateTime e)
+        {
+            //FINDQUERY
+            return _context.Booking.FromSql("SELECT * FROM eHotel.booking WHERE (start_date <= {0} AND start_date >= {1}) OR (end_date >= {1} AND end_date <= {0})", e, s).ToList();
+        }
+
+        public List<Renting> getRentingsByDates(DateTime s, DateTime e)
+        {
+            //FINDQUERY
+            return _context.Renting.FromSql("SELECT * FROM eHotel.renting WHERE (start_date <= {0} AND start_date >= {1}) OR (end_date >= {1} AND end_date <= {0})", e, s).ToList();
+        }
+
+        public List<Room> getRoomForSearch(string qry) {
+            //FINDQUERY
+            return _context.Room.FromSql(qry).Include(r => r.H).Include(r => r.Amenity).ToList();
+        }
     }
 }

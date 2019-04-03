@@ -10,3 +10,15 @@ D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\UserSecretsAssemblyIn
 D:\Ecole\Hiver2019\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.pdb
 D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.dll
 D:\Ecole\Hiver2019\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.pdb
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.dll
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.pdb
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.deps.json
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.runtimeconfig.json
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.runtimeconfig.dev.json
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.dll
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\bin\Debug\netcoreapp2.0\eHotels.pdb
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.csprojAssemblyReference.cache
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.csproj.CoreCompileInputs.cache
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\UserSecretsAssemblyInfo.cs
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.AssemblyInfoInputs.cache
+C:\Users\Vince-PC\Desktop\eHotels\eHotels\eHotels\obj\Debug\netcoreapp2.0\eHotels.AssemblyInfo.cs
