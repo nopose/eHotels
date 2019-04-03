@@ -3,9 +3,15 @@
     ViewData["Title"] = "Index";
 }
 
+@using Microsoft.AspNetCore.Identity
+@using eHotels.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 <style>
-    .box{
-        padding:30px 0px;
+    .box {
+        padding: 30px 0px;
     }
 
     .box-part {
@@ -17,22 +23,22 @@
         box-shadow: 0 8px 6px -6px black;
     }
 
-    .box-part:hover {
-        background: #333;
-    }
+        .box-part:hover {
+            background: #333;
+        }
 
-    .box-part:hover .fa,
-    .box-part:hover .title,
-    .box-part:hover .text,
-    .box-part:hover h5,
-    .box-part:hover h1,
-    .box-part:hover a {
-        color: #FFF;
-        -webkit-transition: all 1s ease-out;
-        -moz-transition: all 1s ease-out;
-        -o-transition: all 1s ease-out;
-        transition: all 1s ease-out;
-    }
+            .box-part:hover .fa,
+            .box-part:hover .title,
+            .box-part:hover .text,
+            .box-part:hover h5,
+            .box-part:hover h1,
+            .box-part:hover a {
+                color: #FFF;
+                -webkit-transition: all 1s ease-out;
+                -moz-transition: all 1s ease-out;
+                -o-transition: all 1s ease-out;
+                transition: all 1s ease-out;
+            }
 
     .text {
         margin: 20px 0px;
@@ -153,71 +159,85 @@
 <div class="box">
     <div class="container">
         <div class="row">
-                @if (Model.Rooms.Count > 0)
+            @if (Model.Rooms.Count > 0)
+            {
+                @foreach (Room r in Model.Rooms)
                 {
-                    @foreach (Room r in Model.Rooms)
-                    {
-                        <div id="@r.Rid" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                            <div class="box-part text-center">
+                    <div id="@r.Rid" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <div class="box-part text-center">
 
-                                <!--<i class="fa fa-behance fa-3x" aria-hidden="true"></i>-->
+                            <!--<i class="fa fa-behance fa-3x" aria-hidden="true"></i>-->
 
-                                <div class="title">
-                                    <h3><u>@r.H.HotelName</u></h3>
-                                    <h4>Room #@r.RoomNum</h4>
-                                </div>
-
-                                <div>
-                                    <h5 class="text-muted">Capacity - @r.Capacity</h5>
-                                    
-                                    <h1 style="padding:3% 0 3% 0;">$@r.Price</h1>
-                                </div>
-
-                                <div>
-                                    @if (r.Landscape == Constants.SEAVIEW)
-                                    {
-                                        <h5>View on the sea!</h5>
-                                    }
-                                    else if (r.Landscape == Constants.MOUNTAINVIEW)
-                                    {
-                                        <h5>View on the mountain!</h5>
-                                    }
-                                </div>
-
-                                <div class="text">
-                                    @if (r.Amenity.Count > 0)
-                                    {
-                                        @foreach (Amenity a in r.Amenity)
-                                        {
-                                            <span>@a.Amenity1</span>
-                                        }
-                                    }
-                                    else
-                                    { <span>No amentity is available for this room.</span> }
-                                </div>
-
-                                @{ 
-                                    Dictionary<string, string> parms = new Dictionary<string, string>
-                                        {
-                                            {"roomid", r.Rid.ToString() },
-                                            {"startdate", Model.StartDate.ToString() },
-                                            {"enddate", Model.EndDate.ToString() }
-                                        };
-                                }
-
-                                <a 
-                                 asp-controller="Customer"
-                                 asp-action="BookRoomFromSearch"
-                                 asp-all-route-data="@parms">Want to book it?</a>
-
+                            <div class="title">
+                                <h3><u>@r.H.HotelName</u></h3>
+                                <h4>Room #@r.RoomNum</h4>
                             </div>
+
+                            <div>
+                                <h5 class="text-muted">Capacity - @r.Capacity</h5>
+
+                                <h1 style="padding:3% 0 3% 0;">$@r.Price</h1>
+                            </div>
+
+                            <div>
+                                @if (r.Landscape == Constants.SEAVIEW)
+                                {
+                                    <h5>View on the sea!</h5>
+                                }
+                                else if (r.Landscape == Constants.MOUNTAINVIEW)
+                                {
+                                    <h5>View on the mountain!</h5>
+                                }
+                            </div>
+
+                            <div class="text">
+                                @if (r.Amenity.Count > 0)
+                                {
+                                    @foreach (Amenity a in r.Amenity)
+                                    {
+                                        <span>@a.Amenity1</span>
+                                    }
+                                }
+                                else
+                                { <span>No amentity is available for this room.</span>}
+                            </div>
+
+                            @{
+                                Dictionary<string, string> parms = new Dictionary<string, string>
+                                                {
+                                                    {"roomid", r.Rid.ToString() },
+                                                    {"startdate", Model.StartDate.ToString() },
+                                                    {"enddate", Model.EndDate.ToString() }
+                                                };
+                            }
+
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                ApplicationUser user = await UserManager.GetUserAsync(User);
+
+                                @if (user.Role.Equals(Constants.EMPLOYEE))
+                                {
+                                    <a asp-controller="Home"
+                                       asp-action="Payment"
+                                       asp-all-route-data="@parms">Rent it as an employee</a>
+
+                                }
+                                else
+                                {
+                                    <a asp-controller="Customer"
+                                       asp-action="BookRoomFromSearch"
+                                       asp-all-route-data="@parms">Want to book it?</a>
+                                }
+                            }
+
                         </div>
-                    }
+                    </div>
                 }
-                else
-                {
-                    <h3>No filter has been applied yet.</h3>
-                }
+            }
+            else
+            {
+                <h3>No filter has been applied yet.</h3>
+            }
         </div>
     </div>
 </div>

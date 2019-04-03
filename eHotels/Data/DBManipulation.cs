@@ -24,13 +24,13 @@ namespace eHotels.Data
                 .Where(p => p.Customer != null && p.Ssn == ssn).First();
         }
 
-        public List<Person> getEmployee(int ssn)
+        public Person getEmployee(int ssn)
         {
             //FINDQUERY
             //EF Generated query
             return _context.Person
                 .Include(p => p.Employee)
-                .Where(p => p.Employee != null && p.Ssn == ssn).ToList();
+                .Where(p => p.Employee != null && p.Ssn == ssn).First();
         }
 
         public List<Person> getEmployees()
