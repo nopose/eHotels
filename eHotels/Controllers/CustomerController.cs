@@ -159,8 +159,6 @@ namespace eHotels.Controllers
 
                 return View(model);
 
-            } else {
-                //TODO
             }
 
             StatusMessage = "Exactly " + model.Rooms.Count.ToString() + " have been loaded.";
@@ -212,7 +210,7 @@ namespace eHotels.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> BookRoomFromSearch(Booking newBooking)
+        public IActionResult BookRoomFromSearch(Booking newBooking)
         {
             try
             {
@@ -247,41 +245,55 @@ namespace eHotels.Controllers
 
         public IActionResult CustomerBookings()
         {
-            return View(new List<Booking>());
+            DBManipulation db = new DBManipulation(_context);
+
+            var user = getUser();
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            List<Booking> bookings = db.getPersonBookings(user.SSN);
+
+            return View(bookings);
         }
 
         #endregion
 
         #region RentRoom
 
-        /*[HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> BookRoomFromSearch(Booking newBooking)
+        public IActionResult RentRoomFromSearch(PaymentViewModel newRenting)
         {
-            try
+            if (isEmployee())
             {
-                if (ModelState.IsValid)
+                try
                 {
+                    if (ModelState.IsValid)
+                    {
 
-                    Object[] insertArray = new object[] { newBooking.Rid, newBooking.CustomerSsn, newBooking.StartDate, newBooking.EndDate };
-                    _context.Database.ExecuteSqlCommand(
-                       "INSERT INTO eHotel.booking (rid, customer_ssn, start_date, end_date)" +
-                       "VALUES ({0},{1},{2},{3})",
-                       parameters: insertArray);
+                        Object[] insertArray = new object[] { newRenting.booking.Rid, newRenting.booking.CustomerSsn, getUser().SSN, newRenting.booking.StartDate, newRenting.booking.EndDate };
+                        _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Renting (rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4})", parameters: insertArray);
 
-                    TempData["SuccessMessage"] = "Booking successfully added to your account!!";
-                    return RedirectToAction("CustomerBookings");
+                        TempData["SuccessMessage"] = "Renting successfully added to " + newRenting.FullName + "'s account!!";
+                        return RedirectToAction("Index");
+                    }
                 }
+                catch (Npgsql.PostgresException)
+                {
+                    //Log the error (uncomment ex variable name and write a log.
+                    ModelState.AddModelError("", "Unable to save changes. " +
+                        "Try again, and if the problem persists " +
+                        "see your system administrator.");
+                }
+                return View(newRenting);
             }
-            catch (Npgsql.PostgresException)
+            else
             {
-                //Log the error (uncomment ex variable name and write a log.
-                ModelState.AddModelError("", "Unable to save changes. " +
-                    "Try again, and if the problem persists " +
-                    "see your system administrator.");
+                return RedirectToAction("AccessDenied", "Account");
             }
-            return View(newBooking);
-        }*/
+        }
 
         #endregion
 
@@ -295,6 +307,19 @@ namespace eHotels.Controllers
             var userTask = getUserAsync();
             userTask.Wait();
             return userTask.Result;
+        }
+
+        private Boolean isEmployee()
+        {
+            var user = getUser();
+            if (user != null)
+            {
+                return user.Role.Equals(Constants.EMPLOYEE);
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }

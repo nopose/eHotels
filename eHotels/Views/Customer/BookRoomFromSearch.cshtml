@@ -44,15 +44,15 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="col-md-3"><em>@Model.R.RoomNum</em></td>
+                            <td class="col-md-2"><em>@Model.R.RoomNum</em></td>
                             <td class="col-md-4"> @Model.StartDate.ToString("dddd, dd MMMM yyyy") </td>
                             <td class="col-md-4"> @Model.EndDate.ToString("dddd, dd MMMM yyyy") </td>
-                            <td class="col-md-1 text-center">$@Model.R.Price</td>
+                            <td class="col-md-2 text-center">$@Model.R.Price x @((Model.EndDate - Model.StartDate).Days + 1) Nights</td>
                         </tr>
                         <tr>
-                            <td>   </td>
-                            <td>   </td>
-                            <td class="text-right">
+                            <td class="col-md-1">   </td>
+                            <td class="col-md-1">   </td>
+                            <td class="text-right col-md-5">
                                 <p>
                                     <strong>Subtotal: </strong>
                                 </p>
@@ -60,12 +60,12 @@
                                     <strong>Tax: </strong>
                                 </p>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center col-md-5">
                                 <p>
-                                    <strong>$@Model.R.Price</strong>
+                                    <strong>$@(Model.R.Price * ((Model.EndDate - Model.StartDate).Days + 1))</strong>
                                 </p>
                                 <p>
-                                    <strong>$@string.Format("{0:N2}", (Model.R.Price * (decimal)0.13))</strong>
+                                    <strong>$@string.Format("{0:N2}", (Model.R.Price * ((Model.EndDate - Model.StartDate).Days + 1)) * (decimal) 0.13)</strong>
                                 </p>
                             </td>
                         </tr>
@@ -73,7 +73,7 @@
                             <td>   </td>
                             <td>   </td>
                             <td class="text-right"><h4><strong>Total: </strong></h4></td>
-                            <td class="text-center text-danger"><h4><strong>$@string.Format("{0:N2}", (Model.R.Price * (decimal)1.13))</strong></h4></td>
+                            <td class="text-center text-danger"><h4><strong>$@string.Format("{0:N2}", (Model.R.Price * ((Model.EndDate - Model.StartDate).Days + 1)) * (decimal)1.13)</strong></h4></td>
                         </tr>
                     </tbody>
                 </table>
