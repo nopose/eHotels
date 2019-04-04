@@ -199,6 +199,15 @@ namespace eHotels.Data
                 .ToList();
         }
 
+        public List<Booking> getPersonBookings(int ssn)
+        {
+            return _context.Booking
+                .Include(b => b.R)
+                    .ThenInclude(r => r.H)
+                .Where(b => b.CustomerSsn == ssn)
+                .ToList();
+        }
+
         public List<Booking> getBookingsFullNav()
         {
             return _context.Booking

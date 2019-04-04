@@ -3,7 +3,78 @@
     ViewData["Title"] = "CustomerBookings";
 }
 
+<style>
+    .box {
+        padding: 30px 0px;
+    }
+
+    .box-part {
+        background: #FFF;
+        border-radius: 10px;
+        padding: 30px 10px;
+        margin: 30px 0px;
+        border: 1px solid lightgray;
+        box-shadow: 0 8px 6px -6px black;
+    }
+
+    .text {
+        margin: 20px 0px;
+    }
+
+    .fa {
+        color: #4183D7;
+    }
+</style>
+
 <h2>My bookings</h2>
+<h5>Note that these bookings are those that haven't passed yet.</h5>
+<hr />
+
+<div class="box">
+    <div class="container">
+        <div class="row">
+            @if (Model.Count > 0)
+            {
+                int index = 1;
+                @foreach (Booking b in Model)
+                {
+                    <div id="@b.Bid" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                        <div class="box-part text-center">
+
+                            <div class="title">
+                                <h3>Booking #@index</h3>
+                                <h4>@b.R.H.HotelName</h4>
+                            </div>
+
+                            <div>
+                                <h5 class="text-muted">Room #@b.R.RoomNum</h5>
+
+                                <h1 style="padding:3% 0 3% 0;">$@string.Format("{0:N2}", (b.R.Price * ((b.EndDate - b.StartDate).Days + 1)) * (decimal)1.13)</h1>
+                            </div>
+
+                            <div>
+                                @if (b.R.Landscape == Constants.SEAVIEW)
+                                {
+                                    <h5>View on the sea!</h5>
+                                }
+                                else if (b.R.Landscape == Constants.MOUNTAINVIEW)
+                                {
+                                    <h5>View on the mountain!</h5>
+                                }
+                            </div>
+
+                            <div class="text">
+                                <h4>@b.StartDate.ToString("dd MMMM yyyy") - @b.EndDate.ToString("dd MMMM yyyy")</h4>
+                                <h6><em>(@((b.EndDate - b.StartDate).Days + 1) Nights)</em></h6>
+                            </div>
+                        </div>
+                    </div>
+                    index = index + 1;
+                }
+            }
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
