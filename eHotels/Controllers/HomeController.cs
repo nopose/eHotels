@@ -64,6 +64,18 @@ namespace eHotels.Controllers
             return View();
         }
 
+        public IActionResult EmployeeSection()
+        {
+            if (isEmployee())
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
         #region ManageHotel
 
         [HttpGet]
