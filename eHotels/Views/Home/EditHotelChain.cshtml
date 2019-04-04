@@ -101,7 +101,7 @@
                         <!-- If modified, also modify the html generated in the addEmail javascript function -->
                         <li class="list-group-item" id="email@(index2)">
                             @item.Email
-                            <a onclick="emailDelete(@item.Hcid, '@item.Email', @index)" class="text-center col-md-2">
+                            <a onclick="emailDelete(@item.Hcid, '@item.Email', @index2)" class="text-center col-md-2">
                                 <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this email"></i>
                             </a>
                         </li>
@@ -109,8 +109,8 @@
                     }
                 </ul>
                 <div class="col-md-2">
-                    <a data-toggle="modal" data-target="#AddAmenityModal">
-                        <span data-toggle="tooltip" data-placement="top" title="Add amenity">
+                    <a data-toggle="modal" data-target="#AddEmailModal">
+                        <span data-toggle="tooltip" data-placement="top" title="Add email">
                             <i class="glyphicon glyphicon-plus"></i>
                         </span>
                     </a>
@@ -139,6 +139,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                 <a onclick="phoneAdd()" class="btn btn-primary">Add</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AddEmailModal" tabindex="-1" role="dialog" aria-labelledby="EmailModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="EmailModal">Add a email to this hotel chain</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label asp-for="EmailAdd"></label>
+                    <input id="valueEmail" asp-for="EmailAdd" class="form-control" />
+                    <span id="errorEmail" asp-validation-for="EmailAdd" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <a onclick="emailAdd()" class="btn btn-primary">Add</a>
             </div>
         </div>
     </div>
@@ -229,6 +250,97 @@
                     );
                     $("#topList").fadeIn();
                     $("#topSuccess").text("The phone number was successfully added");
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+            },
+            error: function () {
+                console.log("An error happened");
+            }
+        });
+        }
+
+        function emailDelete(hotelChain, email, index) {
+            var result = confirm("Are you sure you want to delete this email?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Hcid': hotelChain,
+                    'Email': email.toString()
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteHotelChainEmail", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#email' + index).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The email was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+
+    function emailAdd() {
+        $('#AddEmailModal').modal('toggle');
+        var hotelChain = $('#hotelChainHcid').val();
+        var email = $('#valueEmail').val();
+        var json = JSON.stringify({
+            'Hcid': hotelChain,
+            'Email': email.toString()
+        });
+
+        $.ajax({
+            url: '@Url.Action("AddHotelChainEmail", "Home")',
+            type: "POST",
+            headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: json,
+            success: function (data) {
+                if (data.includes("Error")) {
+                    $("#topList").fadeIn();
+                    $("#topError").text(data);
+                    setTimeout(function () {
+                        $("#topList").fadeOut();
+                    }, 5000);
+                    $("#toTop").get(0).scrollIntoView();
+                }
+                else {
+                    $('#emailList').append(
+                        `
+                        <li class="list-group-item" id="email` + myIndex + `">`
+                        + email +
+                        `<a onclick="emailDelete(` + hotelChain + `, '` + email + `', ` + myIndex +`)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this email"></i>
+                            </a>
+                        </li>
+                    `
+                    );
+                    $("#topList").fadeIn();
+                    $("#topSuccess").text("The email was successfully added");
                     setTimeout(function () {
                         $("#topList").fadeOut();
                     }, 5000);

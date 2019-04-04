@@ -559,16 +559,6 @@ namespace eHotels.Controllers
                 };
                 PaymentViewModel model = new PaymentViewModel(newBooking);
                 return View(model);
-                //Booking model = getBooking(Convert.ToInt32(Bid));
-                //if(model != null)
-                //{
-                //    return View(model);
-                //}
-                //else
-                //{
-                //    TempData["ErrorMessage"] = "The booking doesn't exist";
-                //    return RedirectToAction("ManageBookings");
-                //}
             }
             else
             {
@@ -687,7 +677,7 @@ namespace eHotels.Controllers
                     if (insertResult)
                     {
                         TempData["SuccessMessage"] = "Hotel chain updated";
-                        return RedirectToAction("ManageHotels");
+                        return RedirectToAction("ManageHotelChains");
                     }
                     else
                     {
@@ -1121,7 +1111,7 @@ namespace eHotels.Controllers
                 Object[] insertArray = new object[] { model.HotelChainName, model.StreetNumber, model.StreetName,
                 model.AptNumber, model.City, model.HcState,model.Zip, model.NumHotels };
                 _context.Database.ExecuteSqlCommand(
-                   "INSERT INTO eHotel.Hotel (hotel_chain_name,street_number,street_name,apt_number,city,hc_state,zip,num_hotels)" +
+                   "INSERT INTO eHotel.hotelchain (hotel_chain_name,street_number,street_name,apt_number,city,hc_state,zip,num_hotels)" +
                    "VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
                    parameters: insertArray);
                 return true;
@@ -1157,10 +1147,7 @@ namespace eHotels.Controllers
             try
             {
                 //FINDQUERY
-                _context.Database.ExecuteSqlCommand(
-                   "UPDATE eHotel.hotelchain SET hotel_chain_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, hc_state={5}, zip={6}" +
-                   "WHERE hid={7}",
-                   parameters: insertArray);
+                _context.Database.ExecuteSqlCommand("UPDATE eHotel.hotelchain SET hotel_chain_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, hc_state={5}, zip={6} WHERE hcid={7}", parameters: insertArray);
                 return true;
             }
             catch (PostgresException ex)

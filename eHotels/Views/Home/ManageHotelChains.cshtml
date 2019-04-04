@@ -31,7 +31,7 @@
                         <li class="list-group-item">Number of hotels: @item.NumHotels</li>
                     </ul>
                     <div class="col-md-2 col-md-offset-11">
-                        <a asp-area="" asp-controller="Home" asp-action="EditHotelChain" asp-route-Hid="@item.Hcid">
+                        <a asp-area="" asp-controller="Home" asp-action="EditHotelChain" asp-route-Hcid="@item.Hcid">
                             <i class="glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="top" title="Edit this hotel chain"></i>
                         </a>
                         <a onclick="hotelChainDelete(@item.Hcid)" class="text-center">
@@ -77,7 +77,7 @@
                             $("#toTop").get(0).scrollIntoView();
                         }
                         else {
-                            $('#hotelChain' + hotel).remove();
+                            $('#hotelChain' + hotelChain).remove();
                             $("#topList").fadeIn();
                             $("#topSuccess").text("The hotel chain and associated hotels and rooms were successfully deleted");
                             setTimeout(function () {
