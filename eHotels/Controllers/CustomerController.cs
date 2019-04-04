@@ -44,6 +44,7 @@ namespace eHotels.Controllers
         #region SearchRoom
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var model = new SearchRoomViewModel(_context)
@@ -66,6 +67,7 @@ namespace eHotels.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public IActionResult Index(SearchRoomViewModel model)
         {
@@ -85,12 +87,12 @@ namespace eHotels.Controllers
             }
 
             if (!(DateTime.Compare(s, DateTime.Now) > 0)) {
-                ModelState.AddModelError("StartDate", "The start date must be greater or equal than today.");
+                ModelState.AddModelError("StartDate", "The start date must be greater than today.");
                 return View(model);
             }
 
             if (!(DateTime.Compare(e, DateTime.Now) > 0)) {
-                ModelState.AddModelError("EndDate", "The end date must be greater or equal than today.");
+                ModelState.AddModelError("EndDate", "The end date must be greater than today.");
                 return View(model);
             } else if (!(DateTime.Compare(e, model.StartDate) > 0)) {
                 ModelState.AddModelError("EndDate", "The end date must be greater (by at least 1 day) than the start date.");
@@ -298,6 +300,7 @@ namespace eHotels.Controllers
         #region DBViews
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ViewOne()
         {
             DBManipulation db = new DBManipulation(_context);
@@ -312,6 +315,7 @@ namespace eHotels.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public IActionResult ViewOne(ViewOneViewModel model)
         {
@@ -323,6 +327,7 @@ namespace eHotels.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ViewTwo()
         {
             DBManipulation db = new DBManipulation(_context);
@@ -337,6 +342,7 @@ namespace eHotels.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public IActionResult ViewTwo(ViewTwoViewModel model)
         {

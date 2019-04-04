@@ -229,6 +229,9 @@
                                        asp-action="BookRoomFromSearch"
                                        asp-all-route-data="@parms">Want to book it?</a>
                                 }
+                            } else
+                            {
+                                <h6 class="text-danger"><em>Must be authenticated to book a room.</em></h6>
                             }
 
                         </div>
