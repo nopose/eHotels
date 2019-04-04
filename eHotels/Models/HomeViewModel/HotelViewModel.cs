@@ -77,7 +77,8 @@ namespace eHotels.Models
         {
             initModel(context, hotel.Hid);
 
-            HotelChainID = hotel.Hid;
+            Hid = hotel.Hid.ToString();
+            HotelChainID = hotel.Hcid;
             HotelName = hotel.HotelName;
             ManagerSSN = hotel.Manager;
             Category = hotel.Category;
