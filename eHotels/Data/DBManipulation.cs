@@ -228,5 +228,17 @@ namespace eHotels.Data
                 .Where(b => b.R.Hid == hid)
                 .ToList();
         }
+
+        public List<Hotelchainphone> getHotelChainPhones(int hcid)
+        {
+            //FINDQUERY
+            return _context.Hotelchainphone.FromSql("SELECT * FROM eHotel.hotelchainphone WHERE hcid={0}", parameters: hcid).ToList();
+        }
+
+        public List<Hotelchainemail> getHotelChainEmails(int hcid)
+        {
+            //FINDQUERY
+            return _context.Hotelchainemail.FromSql("SELECT * FROM eHotel.hotelchainemail WHERE hcid={0}", parameters: hcid).ToList();
+        }
     }
 }

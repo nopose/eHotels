@@ -1,0 +1,55 @@
+﻿@model HotelChainViewModel
+@{
+    ViewData["Title"] = "CreateHotelChain";
+}
+
+<h2>Add an hotel chain</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="HotelChainName"></label>
+                <input asp-for="HotelChainName" class="form-control" />
+                <span asp-validation-for="HotelChainName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreetNumber"></label>
+                <input asp-for="StreetNumber" class="form-control" />
+                <span asp-validation-for="StreetNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StreetName"></label>
+                <input asp-for="StreetName" class="form-control" />
+                <span asp-validation-for="StreetName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AptNumber"></label>
+                <input asp-for="AptNumber" class="form-control" />
+                <span asp-validation-for="AptNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State"></label>
+                <input asp-for="State" class="form-control" />
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Zip"></label>
+                <input asp-for="Zip" class="form-control" />
+                <span asp-validation-for="Zip" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Create hotel chain</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -1,0 +1,97 @@
+﻿@model List<Hotelchain>
+@{
+    ViewData["Title"] = "ManageHotelChains";
+}
+
+<h2 id="toTop">Manage the hotel chains</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        @foreach (var item in Model)
+        {
+            <div id="hotelChain@(item.Hcid)" class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">@item.HotelChainName</h3>
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        @if (item.AptNumber != null)
+                        {
+                            <li class="list-group-item">Address: @item.StreetNumber Apt. @item.AptNumber @item.StreetName, @item.HcState, @item.Zip</li>
+                        }
+                        else
+                        {
+                            <li class="list-group-item">Address: @item.StreetNumber @item.StreetName, @item.HcState, @item.Zip</li>
+                        }
+                        <li class="list-group-item">Number of hotels: @item.NumHotels</li>
+                    </ul>
+                    <div class="col-md-2 col-md-offset-11">
+                        <a asp-area="" asp-controller="Home" asp-action="EditHotelChain" asp-route-Hid="@item.Hcid">
+                            <i class="glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="top" title="Edit this hotel chain"></i>
+                        </a>
+                        <a onclick="hotelChainDelete(@item.Hcid)" class="text-center">
+                            <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this hotel chain"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <a asp-area="" asp-controller="Home" asp-action="CreateHotelChain" class="btn btn-primary col-md-6">Add a new hotel chain</a>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        function hotelChainDelete(hotelChain) {
+            var result = confirm("Are you sure you want to delete this hotel chain (all of its hotels and rooms will also be deleted)?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Hcid': hotelChain.toString()
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteHotelChain", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#hotelChain' + hotel).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The hotel chain and associated hotels and rooms were successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+    </script>
+    @await Html.PartialAsync("_feedbackScripts")
+}
