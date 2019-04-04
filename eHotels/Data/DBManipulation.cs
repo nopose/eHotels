@@ -240,5 +240,29 @@ namespace eHotels.Data
             //FINDQUERY
             return _context.Hotelchainemail.FromSql("SELECT * FROM eHotel.hotelchainemail WHERE hcid={0}", parameters: hcid).ToList();
         }
+
+        public List<ViewOne> getViewOne()
+        {
+            //FINDQUERY
+            return _context.ViewOne.FromSql("SELECT * FROM eHotel.num_hotel_area").ToList();
+        }
+
+        public List<ViewOne> getViewOne(string state)
+        {
+            //FINDQUERY
+            return _context.ViewOne.FromSql("SELECT * FROM eHotel.num_hotel_area WHERE h_state={0}", state).ToList();
+        }
+
+        public List<ViewTwo> getViewTwo()
+        {
+            //FINDQUERY
+            return _context.ViewTwo.FromSql("SELECT * FROM eHotel.capacity_room").ToList();
+        }
+
+        public List<ViewTwo> getViewTwo(int hid)
+        {
+            //FINDQUERY
+            return _context.ViewTwo.FromSql("SELECT * FROM eHotel.capacity_room WHERE hid={0}", hid).ToList();
+        }
     }
 }

@@ -1,0 +1,83 @@
+﻿@model ViewTwoViewModel
+@{
+    ViewData["Title"] = "ViewOne";
+}
+
+<style>
+    .box {
+        padding: 30px 0px;
+    }
+
+    .box-part {
+        background: #FFF;
+        border-radius: 10px;
+        padding: 30px 10px;
+        margin: 30px 0px;
+        border: 1px solid lightgray;
+        box-shadow: 0 8px 6px -6px black;
+    }
+
+    .text {
+        margin: 20px 0px;
+    }
+
+    .fa {
+        color: #4183D7;
+    }
+</style>
+
+<h2>Capacity of all the rooms per hotels</h2>
+<hr />
+
+<div class="row text-center">
+    <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+        <div class="col-lg-8 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-4 col-sm-offset-4 col-xs-12">
+            <div class="form-group">
+                <label asp-for="hotelSelected"></label>
+                <br />
+                <select asp-for="hotelSelected" class="form-control" onchange="submitForm()">
+                    <option value=-1 selected="selected">All</option>
+                    @foreach (Hotel hotel in Model.hotels)
+                    {
+                        <option value=@hotel.Hid>@hotel.HotelName</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row text-center">
+    @if (Model.viewtwos.Count > 0)
+    {
+        int hid = -1;
+        @foreach (ViewTwo v2 in Model.viewtwos)
+        {
+            if (v2.Hid != hid)
+            {
+                if (hid != -1) { 
+                    @Html.Raw("</div></div>");
+                }
+
+                @Html.Raw("<div class='col-lg-8 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-4 col-sm-offset-4 col-xs-12'><div class='box-part text-center'><div class='title'>");
+                <h3><u>@v2.HotelName</u></h3>
+                @Html.Raw("</div>");
+
+                hid = v2.Hid;
+            }
+
+            <div class="text">
+                <h4>Room #@v2.RoomNum</h4> 
+                <h6>Capacity: @v2.Capacity<em> (pers.)</em></h6>
+                <hr style="width:25%;" />
+            </div>
+        }
+        @Html.Raw("</div></div>");
+    }
+</div>
+
+<script>
+    function submitForm() {
+        $('form').submit();
+    }
+</script>

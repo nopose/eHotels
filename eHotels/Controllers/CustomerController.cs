@@ -273,26 +273,78 @@ namespace eHotels.Controllers
                     if (ModelState.IsValid)
                     {
 
-                        Object[] insertArray = new object[] { newRenting.booking.Rid, newRenting.booking.CustomerSsn, getUser().SSN, newRenting.booking.StartDate, newRenting.booking.EndDate };
+                        Object[] insertArray = new object[] { newRenting.booking.Rid, Int32.Parse(newRenting.SSN), getUser().SSN, newRenting.booking.StartDate, newRenting.booking.EndDate };
                         _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Renting (rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4})", parameters: insertArray);
 
                         TempData["SuccessMessage"] = "Renting successfully added to " + newRenting.FullName + "'s account!!";
                         return RedirectToAction("Index");
                     }
                 }
-                catch (Npgsql.PostgresException)
+                catch (Npgsql.PostgresException ex)
                 {
                     //Log the error (uncomment ex variable name and write a log.
-                    ModelState.AddModelError("", "Unable to save changes. " +
-                        "Try again, and if the problem persists " +
-                        "see your system administrator.");
+                    TempData["ErrorMessage"] = ex.Message;
                 }
-                return View(newRenting);
+                return RedirectToAction("Index");
             }
             else
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
+        }
+
+        #endregion
+
+        #region DBViews
+
+        [HttpGet]
+        public IActionResult ViewOne()
+        {
+            DBManipulation db = new DBManipulation(_context);
+            ViewOneViewModel model = new ViewOneViewModel()
+            {
+                stateSelected = "All",
+                viewones = db.getViewOne(),
+                states = db.getHotelStates()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ViewOne(ViewOneViewModel model)
+        {
+            DBManipulation db = new DBManipulation(_context);
+            model.viewones = model.stateSelected.Equals("All") ? db.getViewOne() : db.getViewOne(model.stateSelected);
+            model.states = db.getHotelStates();
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ViewTwo()
+        {
+            DBManipulation db = new DBManipulation(_context);
+            ViewTwoViewModel model = new ViewTwoViewModel()
+            {
+                viewtwos = db.getViewTwo(),
+                hotels = db.getHotels(),
+                hotelSelected = -1
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ViewTwo(ViewTwoViewModel model)
+        {
+            DBManipulation db = new DBManipulation(_context);
+            model.viewtwos = (model.hotelSelected == -1) ? db.getViewTwo() : db.getViewTwo(model.hotelSelected);
+            model.hotels = db.getHotels();
+
+            return View(model);
         }
 
         #endregion

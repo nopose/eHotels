@@ -1,0 +1,75 @@
+﻿@model ViewOneViewModel
+@{
+    ViewData["Title"] = "ViewOne";
+}
+
+<style>
+    .box {
+        padding: 30px 0px;
+    }
+
+    .box-part {
+        background: #FFF;
+        border-radius: 10px;
+        padding: 30px 10px;
+        margin: 30px 0px;
+        border: 1px solid lightgray;
+        box-shadow: 0 8px 6px -6px black;
+    }
+
+    .text {
+        margin: 20px 0px;
+    }
+
+    .fa {
+        color: #4183D7;
+    }
+</style>
+
+<h2>Number of rooms per areas</h2>
+<hr />
+
+<div class="row text-center">
+    <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+        <div class="col-lg-8 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-4 col-sm-offset-4 col-xs-12">
+            <div class="form-group">
+                <label asp-for="stateSelected"></label>
+                <br />
+                <select asp-for="stateSelected" class="form-control" onchange="submitForm()">
+                    <option value="All" selected="selected">All</option>
+                    @foreach (String state in Model.states)
+                    {
+                        <option value="@state">@state</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="row text-center">
+    @if (Model.viewones.Count > 0)
+    {
+        @foreach (ViewOne v1 in Model.viewones)
+        {
+            <div class="col-lg-8 col-lg-offset-2 col-md-6 col-md-offset-3 col-sm-4 col-sm-offset-4 col-xs-12">
+                <div class="box-part text-center">
+
+                    <div class="title">
+                        <h3>State: @v1.HState</h3>
+                    </div>
+
+                    <div class="text">
+                        <h4><em>Number of rooms: @v1.RoomCount</em></h4>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<script>
+    function submitForm() {
+        $('form').submit();
+    }
+</script>
