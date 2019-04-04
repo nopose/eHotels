@@ -499,19 +499,21 @@ namespace eHotels.Controllers
             }
         }
 
-        [HttpGet]
-        public IActionResult RentBooking(String Bid)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RentBooking(PaymentViewModel model)
         {
             if (isEmployee())
             {
-                if(bookingToRenting(Convert.ToInt32(Bid)) > 0)
+                if(bookingToRenting(Convert.ToInt32(model.booking.Bid)) > 0)
                 {
                     TempData["SuccessMessage"] = "Payment successful, booking converted to renting";
                     return RedirectToAction("ManageBookings");
                 }
                 else
                 {
-                    return RedirectToAction("Payment", new { Bid });
+                    TempData["ErrorMessage"] = "Payment failed, the booking is invalid";
+                    return RedirectToAction("ManageBookings");
                 }
             }
             else

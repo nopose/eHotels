@@ -100,6 +100,7 @@
                 <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" asp-controller=@(controller) asp-action=@(action)>
                     <h4>Create a new customer account.</h4>
                     <hr />
+                    @Html.HiddenFor(Model => Model.booking.Bid)
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group">
                         <label asp-for="SSN"></label>
