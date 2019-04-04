@@ -542,6 +542,7 @@ namespace eHotels.Controllers
                 DBManipulation db = new DBManipulation(_context);
                 int rid = Convert.ToInt32(parms.GetValueOrDefault("roomid"));
                 int bid = Convert.ToInt32(parms.GetValueOrDefault("bid"));
+                int ssn = Convert.ToInt32(parms.GetValueOrDefault("customerSSN"));
                 DateTime startdate = DateTime.Parse(parms.GetValueOrDefault("startdate"));
                 DateTime enddate = DateTime.Parse(parms.GetValueOrDefault("enddate"));
 
@@ -549,6 +550,7 @@ namespace eHotels.Controllers
 
                 Booking newBooking = new Booking()
                 {
+                    CustomerSsn = ssn,
                     Bid = bid,
                     R = room,
                     Rid = room.Rid,
@@ -574,6 +576,221 @@ namespace eHotels.Controllers
             }
         }
 
+        #endregion
+
+        #region ManageHotelChain
+
+        [HttpGet]
+        public IActionResult ManageHotelChains()
+        {
+            if (isEmployee())
+            {
+                List<Hotelchain> hotelChains = new DBManipulation(_context).getHotelChains();
+                return View(hotelChains);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteHotelChain([FromBody]Hotelchain data)
+        {
+            if (isEmployee())
+            {
+                if (deleteHotelChain(Convert.ToInt32(data.Hcid)))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the hotel");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpGet]
+        public IActionResult CreateHotelChain()
+        {
+            if (isEmployee())
+            {
+                HotelChainViewModel model = new HotelChainViewModel();
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateHotelChain(HotelChainViewModel model)
+        {
+            if (isEmployee())
+            {
+                if (ModelState.IsValid)
+                {
+                    Boolean insertResult = createHotelChain(model);
+                    if (insertResult)
+                    {
+                        TempData["SuccessMessage"] = "Hotel chain created";
+                        return RedirectToAction("ManageHotelChains");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                    }
+                }
+                // If we got this far, something failed, redisplay form
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EditHotelChain(String Hcid)
+        {
+            if (isEmployee())
+            {
+                Hotelchain hotelChain = getHotelChain(Convert.ToInt32(Hcid));
+                HotelChainViewModel model = new HotelChainViewModel(_context, hotelChain);
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditHotelChain(HotelChainViewModel model)
+        {
+            if (isEmployee())
+            {
+                ModelState.Remove("PhoneAdd");
+                ModelState.Remove("EmailAdd");
+                if (ModelState.IsValid)
+                {
+                    Boolean insertResult = updateHotelChain(convertModelToHotelChain(model));
+                    if (insertResult)
+                    {
+                        TempData["SuccessMessage"] = "Hotel chain updated";
+                        return RedirectToAction("ManageHotels");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, TempData["ErrorMessage"].ToString());
+                    }
+                }
+                // If we got this far, something failed, redisplay form
+                model.initModel(_context, Convert.ToInt32(model.Hcid));
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteHotelChainPhone([FromBody]Hotelchainphone data)
+        {
+            if (isEmployee())
+            {
+                if (deleteHotelChainPhone(data.Hcid, data.PhoneNumber))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the phone number");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddHotelChainPhone([FromBody]Hotelchainphone data)
+        {
+            if (isEmployee())
+            {
+                Boolean insertResult = addHotelChainPhone(data.Hcid, data.PhoneNumber);
+                if (insertResult)
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not add the phone number");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteHotelChainEmail([FromBody]Hotelchainemail data)
+        {
+            if (isEmployee())
+            {
+                if (deleteHotelChainEmail(data.Hcid, data.Email))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the email");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddHotelChainEmail([FromBody]Hotelchainemail data)
+        {
+            if (isEmployee())
+            {
+                Boolean insertResult = addHotelChainEmail(data.Hcid, data.Email);
+                if (insertResult)
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not add the email");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
         #endregion
 
         #region DBLogic
@@ -874,6 +1091,149 @@ namespace eHotels.Controllers
                 return null;
             }
         }
+
+        private Boolean deleteHotelChain(int Hcid)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.hotelchain WHERE hcid={0}", parameters: Hcid);
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean createHotelChain(HotelChainViewModel model)
+        {
+            return insertHotelChain(convertModelToHotelChain(model));
+        }
+
+        private Boolean insertHotelChain(Hotelchain model)
+        {
+            try
+            {
+                //FINDQUERY
+                Object[] insertArray = new object[] { model.HotelChainName, model.StreetNumber, model.StreetName,
+                model.AptNumber, model.City, model.HcState,model.Zip, model.NumHotels };
+                _context.Database.ExecuteSqlCommand(
+                   "INSERT INTO eHotel.Hotel (hotel_chain_name,street_number,street_name,apt_number,city,hc_state,zip,num_hotels)" +
+                   "VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Hotelchain getHotelChain(int Hcid)
+        {
+            try
+            {
+                //FINDQUERY
+                Hotelchain hotelChain = _context.Hotelchain.FromSql("SELECT * FROM eHotel.hotelchain WHERE Hcid={0}", parameters: Hcid).ToList()[0];
+                return hotelChain;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return null;
+            }
+        }
+
+        private Boolean updateHotelChain(Hotelchain model)
+        {
+            Object[] insertArray = new object[] { model.HotelChainName, model.StreetNumber, model.StreetName,
+                model.AptNumber, model.City,model.HcState,model.Zip,model.Hcid };
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand(
+                   "UPDATE eHotel.hotelchain SET hotel_chain_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, hc_state={5}, zip={6}" +
+                   "WHERE hid={7}",
+                   parameters: insertArray);
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean deleteHotelChainPhone(int Hcid, string PhoneNumber)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.hotelchainphone WHERE hcid={0} AND phone_number={1}", parameters: new object[] { Hcid, PhoneNumber });
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean addHotelChainPhone(int Hcid, string PhoneNumber)
+        {
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelchainphone VALUES ({0},{1})", parameters: new object[] { PhoneNumber, Hcid });
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean deleteHotelChainEmail(int Hcid, string Email)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.hotelchainemail WHERE hcid={0} AND email={1}", parameters: new object[] { Hcid, Email });
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean addHotelChainEmail(int Hcid, string Email)
+        {
+            try
+            {
+                //FINDQUERY
+                _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelchainemail VALUES ({0},{1})", parameters: new object[] { Email, Hcid });
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
         #endregion
 
         #region Helpers
@@ -934,6 +1294,22 @@ namespace eHotels.Controllers
                 Capacity = Convert.ToInt16(model.Capacity),
                 Landscape = model.Landscape,
                 Isextandable = model.Isextandable
+            };
+        }
+
+        private Hotelchain convertModelToHotelChain(HotelChainViewModel model)
+        {
+            return new Hotelchain
+            {
+                Hcid = Convert.ToInt32(model.Hcid),
+                HotelChainName = model.HotelChainName,
+                NumHotels = 0,
+                StreetNumber = model.StreetNumber,
+                StreetName = model.StreetName,
+                AptNumber = model.AptNumber,
+                City = model.City,
+                HcState = model.State,
+                Zip = model.Zip
             };
         }
 

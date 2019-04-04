@@ -101,6 +101,10 @@
                     <h4>Create a new customer account.</h4>
                     <hr />
                     @Html.HiddenFor(Model => Model.booking.Bid)
+                    @Html.HiddenFor(Model => Model.booking.StartDate)
+                    @Html.HiddenFor(Model => Model.booking.EndDate)
+                    @Html.HiddenFor(Model => Model.booking.CustomerSsn)
+                    @Html.HiddenFor(Model => Model.booking.Rid)
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <div class="form-group">
                         <label asp-for="SSN"></label>
