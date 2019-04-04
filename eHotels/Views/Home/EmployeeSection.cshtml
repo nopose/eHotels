@@ -11,4 +11,9 @@
     <li class="list-group-item"><a asp-area="" asp-controller="Home" asp-action="ManageRooms">Manage Rooms</a></li>
     <li class="list-group-item"><a asp-area="" asp-controller="Account" asp-action="ManageRoles">Manage Roles</a></li>
     <li class="list-group-item"><a asp-area="" asp-controller="Home" asp-action="ManageBookings">Manage Bookings</a></li>
+    <li class="list-group-item"><a asp-area="" asp-controller="Home" asp-action="ArchiveRenting">Archive Old Rentings</a></li>
 </ul>
+
+@section Scripts {
+    @await Html.PartialAsync("_feedbackScripts")
+}

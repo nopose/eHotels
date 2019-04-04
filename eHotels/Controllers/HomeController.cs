@@ -566,6 +566,20 @@ namespace eHotels.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult ArchiveRenting()
+        {
+            if (isEmployee())
+            {
+                TempData["SuccessMessage"] = "Archiving successful";
+                archiveRenting();
+                return RedirectToAction("EmployeeSection");
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+        }
         #endregion
 
         #region ManageHotelChain
@@ -1212,6 +1226,50 @@ namespace eHotels.Controllers
             {
                 //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelchainemail VALUES ({0},{1})", parameters: new object[] { Email, Hcid });
+                return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean archiveRenting()
+        {
+            try
+            {
+                //FINDQUERY
+                //GET old renting
+                List<Renting> rentings = _context.Renting.FromSql("SELECT * FROM eHotel.renting WHERE end_date<{0}", parameters: DateTime.Today.AddMonths(-1)).ToList();
+
+                string query = "";
+                Boolean first = true;
+                foreach (Renting r in rentings)
+                {
+                    if (first)
+                    {
+                        query += r.Rentid.ToString();
+                        first = false;
+                    }
+                    else
+                    {
+                        query += "," + r.Rentid.ToString();
+                    }
+                }
+
+                //Delete old rentings
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.renting WHERE rentid IN ("+query+")");
+
+                //Insert renting in archive table
+                foreach (Renting r in rentings)
+                {
+                    _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.rentingarc (rentaid,rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4},{5})",
+                        r.Rentid, r.Rid, r.CustomerSsn, r.EmployeeSsn, r.StartDate, r.EndDate);
+                }
+
+                 
                 return true;
             }
             catch (PostgresException ex)
