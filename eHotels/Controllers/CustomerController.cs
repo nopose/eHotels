@@ -1,6 +1,5 @@
 ﻿using eHotels.Data;
 using eHotels.Models;
-using eHotels.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,20 +20,17 @@ namespace eHotels.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
-        private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         public CustomerController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext context,
-            IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
-            _emailSender = emailSender;
             _logger = logger;
         }
 
@@ -218,9 +214,6 @@ namespace eHotels.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    /*_context.Add(newBooking);
-                    await _context.SaveChangesAsync();*/
-
                     Object[] insertArray = new object[] { newBooking.Rid, newBooking.CustomerSsn, newBooking.StartDate, newBooking.EndDate };
                     _context.Database.ExecuteSqlCommand(
                        "INSERT INTO eHotel.booking (rid, customer_ssn, start_date, end_date)" +
@@ -231,12 +224,10 @@ namespace eHotels.Controllers
                     return RedirectToAction("CustomerBookings");
                 }
             }
-            catch (Npgsql.PostgresException /* ex */)
+            catch (Npgsql.PostgresException ex)
             {
                 //Log the error (uncomment ex variable name and write a log.
-                ModelState.AddModelError("", "Unable to save changes. " +
-                    "Try again, and if the problem persists " +
-                    "see your system administrator.");
+                TempData["ErrorMessage"] = ex.Message;
             }
             return View(newBooking);
         }

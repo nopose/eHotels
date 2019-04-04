@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using eHotels.Models;
 using eHotels.Models.AccountViewModels;
-using eHotels.Services;
 using eHotels.Data;
 using System.Data.SqlClient;
 using System.Data;
@@ -28,7 +27,6 @@ namespace eHotels.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _context;
-        private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
        
@@ -37,13 +35,11 @@ namespace eHotels.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext context,
-            IEmailSender emailSender,
             ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _context = context;
-            _emailSender = emailSender;
             _logger = logger;
         }
 
