@@ -3,7 +3,7 @@
     ViewData["Title"] = "ManageBookings";
 }
 
-<h2>Manage the customers bookings</h2>
+<h2 id="toTop">Manage the customers bookings</h2>
 <div id="topList" class="row" style="display:none">
     <div class="col-md-12">
         <h3><span id="topError" class="label label-danger"></span></h3>
@@ -12,24 +12,29 @@
 </div>
 <div class="row">
     <div class="col-md-8">
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title">Bookings</h3>
-            </div>
-            <div class="panel-body">
-                <ul class="list-group">
-                    @foreach (var item in Model.bookings)
-                    {
+        @foreach (var item in Model.bookings)
+        {
+            <div id="booking@(item.Bid)" class="panel panel-primary">
+                <div class="panel-body">
+                    <ul class="list-group">
                         <li class="list-group-item">
-                            Hotel: @item.R.H.HotelName<br />
-                            Room #@item.R.RoomNum<br />
-                            Booked by: @item.CustomerSsnNavigation.SsnNavigation.FullName<br />
-                            From: @item.StartDate.ToString("dd/MM/yyyy")<br />
+                            Hotel: @item.R.H.HotelName
+                        </li>
+                        <li class="list-group-item">
+                            Room #@item.R.RoomNum
+                        </li>
+                        <li class="list-group-item">
+                            Booked by: @item.CustomerSsnNavigation.SsnNavigation.FullName
+                        </li>
+                        <li class="list-group-item">
+                            From: @item.StartDate.ToString("dd/MM/yyyy")
+                        </li>
+                        <li class="list-group-item">
                             To: @item.EndDate.ToString("dd/MM/yyyy")
                         </li>
-                        <div class="col-md-4">
-                            @{
-                                Dictionary<string, string> parms = new Dictionary<string, string>
+                    </ul>
+                    @{
+                        Dictionary<string, string> parms = new Dictionary<string, string>
                                 {
                                     {"roomid", item.R.Rid.ToString() },
                                     {"startdate", item.StartDate.ToString() },
@@ -37,23 +42,65 @@
                                     {"bid", item.Bid.ToString() },
                                     {"customerSSN", item.CustomerSsn.ToString() }
                                 };
-                            }
-                            <a asp-controller="Home"
-                               asp-action="Payment"
-                               asp-all-route-data="@parms" class="btn btn-primary col-md-12">Convert to renting</a>
-                        </div>
-                        <div class="col-md-2 col-md-offset-6">
-                            <a asp-area="" asp-controller="Home" asp-action="DeleteBooking" asp-route-Bid="@item.Bid">
-                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Edit this hotel"></i>
-                            </a>
-                        </div>
                     }
-                </ul>
+                    <div class="col-md-6">
+                        <a asp-controller="Home"
+                           asp-action="Payment"
+                           asp-all-route-data="@parms" class="btn btn-primary col-md-12">Convert to renting</a>
+                    </div>
+                    <div class="col-md-3 col-md-offset-3">
+                        <a onclick="bookingDelete(@item.Bid)">
+                            <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Edit this hotel"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 
 @section Scripts {
     @await Html.PartialAsync("_feedbackScripts")
+
+    <script>
+        function bookingDelete(booking) {
+            var result = confirm("Are you sure you want to delete this booking?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Bid': booking.toString()
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteBooking", "Home")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#booking' + booking).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The booking was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+    </script>
 }

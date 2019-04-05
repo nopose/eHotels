@@ -18,6 +18,7 @@ CREATE TABLE eHotel.employee (
 	password VARCHAR(50) NOT NULL,
 	CONSTRAINT employee_person_fkey FOREIGN KEY (ssn)
       REFERENCES eHotel.person (ssn) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.customer (
@@ -27,6 +28,7 @@ CREATE TABLE eHotel.customer (
 	password VARCHAR(50) NOT NULL,
 	CONSTRAINT customer_person_fkey FOREIGN KEY (ssn)
       REFERENCES eHotel.person (ssn) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE eHotel.hotelChain (
@@ -139,9 +141,11 @@ CREATE TABLE  eHotel.booking(
 	start_date TIMESTAMP NOT NULL,
 	end_date TIMESTAMP NOT NULL,
 	CONSTRAINT booking_room_fkey FOREIGN KEY (rID)
-      REFERENCES eHotel.room (rID) MATCH SIMPLE,
+      REFERENCES eHotel.room (rID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT booking_customer_fkey FOREIGN KEY (customer_ssn)
       REFERENCES eHotel.customer (ssn) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE  eHotel.renting(
@@ -152,9 +156,11 @@ CREATE TABLE  eHotel.renting(
 	start_date TIMESTAMP NOT NULL,
 	end_date TIMESTAMP NOT NULL,
 	CONSTRAINT booking_room_fkey FOREIGN KEY (rID)
-      REFERENCES eHotel.room (rID) MATCH SIMPLE,
+      REFERENCES eHotel.room (rID) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT booking_customer_fkey FOREIGN KEY (customer_ssn)
-      REFERENCES eHotel.customer (ssn) MATCH SIMPLE,
+      REFERENCES eHotel.customer (ssn) MATCH SIMPLE
+	  ON UPDATE CASCADE ON DELETE CASCADE,
 	CONSTRAINT booking_employee_fkey FOREIGN KEY (employee_ssn)
       REFERENCES eHotel.employee (ssn) MATCH SIMPLE
 );

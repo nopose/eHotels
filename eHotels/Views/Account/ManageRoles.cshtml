@@ -1,6 +1,8 @@
 ﻿@model RoleViewModel
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "ManageRoles";
+    ApplicationUser user = await UserManager.GetUserAsync(User);
 }
 
 <h2 id="toTop">Manage the employees roles</h2>
@@ -16,12 +18,12 @@
     <div class="col-md-4">
         @foreach (var employee in Model.employees)
         {
-            <h3 class="panel-title">Name: @employee.FullName</h3>
-            <div class="panel panel-primary">
+            <div class="panel panel-primary" id="employee@(employee.Ssn)">
                 <div class="panel-heading">
-                    <h4 class="panel-title">Roles</h4>
+                    <h2 class="panel-title">Name: @employee.FullName</h2>
                 </div>
                 <div class="panel-body">
+                    <h4 class="panel-title">Roles</h4>
                     <ul id="roleList@(employee.Ssn)" class="list-group">
                         @{ int index = 0;}
                         @foreach (var r in employee.Employee.Role)
@@ -36,16 +38,26 @@
                             index++;
                         }
                     </ul>
-                    <div class="col-md-2">
-                        <a data-toggle="modal" data-target="#AddRoleModal" onclick="selectSsn(@employee.Ssn)">
-                            <span data-toggle="tooltip" data-placement="top" title="Add a role">
-                                <i class="glyphicon glyphicon-plus"></i>
-                            </span>
-                        </a>
+                    <div class="row" style="margin-bottom:5%;">
+                        <div class="col-md-2">
+                            <a data-toggle="modal" data-target="#AddRoleModal" onclick="selectSsn(@employee.Ssn)">
+                                <span data-toggle="tooltip" data-placement="top" title="Add a role">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                </span>
+                            </a>
+                        </div>
                     </div>
+                    @if (user.SSN != employee.Ssn)
+                    {
+                    <div class="row">
+                        <div class="col-md-8">
+                            <a onclick="employeeDelete(@employee.Ssn)" class="btn btn-primary col-md-12">Delete this employee</a>
+                        </div>
+                    </div>
+                    }
                 </div>
             </div>
-        }
+            }
     </div>
 </div>
 
@@ -104,7 +116,7 @@
                             $("#toTop").get(0).scrollIntoView();
                         }
                         else {
-                            $('#role' + selectedSSN.toString() + myIndex).remove();
+                            $('#role' + index).remove();
                             $("#topList").fadeIn();
                             $("#topSuccess").text("The role was successfully deleted");
                             setTimeout(function () {
@@ -163,6 +175,7 @@
                         $("#topList").fadeOut();
                     }, 5000);
                     $("#toTop").get(0).scrollIntoView();
+                    $('#valueRole').val('');
                 }
             },
             error: function () {
@@ -174,6 +187,46 @@
         function selectSsn(ssn) {
             selectedSSN = ssn;
             console.log(selectedSSN);
+        }
+
+        function employeeDelete(ssn) {
+            var result = confirm("Are you sure you want to delete this employee?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Ssn': ssn
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteEmployee", "Account")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#employee' + ssn).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The employee was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
         }
     </script>
 }

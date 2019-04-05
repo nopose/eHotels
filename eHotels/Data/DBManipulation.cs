@@ -24,6 +24,14 @@ namespace eHotels.Data
                 .Where(p => p.Customer != null && p.Ssn == ssn).First();
         }
 
+        public List<Person> getCustomers()
+        {
+            //FINDQUERY
+            return _context.Person
+                .Include(p => p.Customer)
+                .Where(p => p.Customer != null).ToList();
+        }
+
         public Person getEmployee(int ssn)
         {
             //FINDQUERY
