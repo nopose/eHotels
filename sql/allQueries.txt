@@ -118,9 +118,199 @@ INSERT INTO eHotel.bookingarc (baid,rid,customer_ssn,start_date,end_date) VALUES
 --Create RentingArc
 INSERT INTO eHotel.rentingarc (rentaid,rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4},{5})
 
+--Get Customer with person
+SELECT * FROM ehotel.Person AS p
+INNER JOIN ehotel.Customer AS c
+ON c.ssn = p.ssn
+WHERE p.ssn = {0}
 
+--Get Employee with person
+SELECT * FROM ehotel.Person AS p
+INNER JOIN ehotel.Employee AS e
+ON e.ssn = p.ssn
+WHERE p.ssn = {0}
 
+--Get all bookings
+SELECT * FROM ehotel.Booking AS b
+INNER JOIN ehotel.Room AS r
+ON r.rid = b.rid
+INNER JOIN ehotel.Hotel AS h
+ON h.hid = r.hid
 
+--Get all bookings with hotel id
+SELECT * FROM ehotel.Booking AS b
+INNER JOIN ehotel.Room AS r
+ON r.rid = b.rid
+INNER JOIN ehotel.Hotel AS h
+ON h.hid = r.hid
+WHERE r.hid = {0}
+
+--Get all bookings with customer ssn
+SELECT * FROM ehotel.Booking AS b
+INNER JOIN ehotel.Room AS r
+ON r.rid = b.rid
+INNER JOIN ehotel.Hotel AS h
+ON h.hid = r.hid
+WHERE b.customer_ssn = {0}
+
+--Get all bookings with all info
+SELECT * FROM ehotel.Booking AS b
+INNER JOIN ehotel.Room AS r
+ON r.rid = b.rid
+INNER JOIN ehotel.Hotel AS h
+ON h.hid = r.hid
+INNER JOIN ehotel.customer AS c
+ON b.customer_ssn = c.ssn
+INNER JOIN ehotel.person AS p
+ON b.customer_ssn = p.ssn
+WHERE r.hid = {0}
+
+-- VIEW TWO --
+
+SELECT * FROM eHotel.capacity_room WHERE hid={0}; -- Note that 0 is a parameter passed to the query. --
+
+SELECT * FROM eHotel.capacity_room;
+
+-- VIEW ONE --
+
+SELECT * FROM eHotel.num_hotel_area WHERE h_state={0}; -- Note that 0 is a parameter passed to the query. --
+
+SELECT * FROM eHotel.num_hotel_area;
+
+-- HOTEL CHAIN EMAILS --
+
+SELECT * FROM eHotel.hotelchainemail WHERE hcid={0}; -- Note that 0 is a parameter passed to the query. --
+
+-- HOTEL CHAIN PHONES --
+
+SELECT * FROM eHotel.hotelchainphone WHERE hcid={0}; -- Note that 0 is a parameter passed to the query. --
+
+-- FILTERING ROOM FROM SEARCH --
+
+SELECT "r.Amenity".aid, "r.Amenity".amenity, "r.Amenity".rid
+    FROM ehotel.amenity AS "r.Amenity"
+    INNER JOIN (
+        SELECT DISTINCT r0.rid
+        FROM (
+            SELECT rid, room_num, room.hid, price, capacity, isExtandable, landscape FROM eHotel.room INNER JOIN eHotel.hotel ON room.hid = hotel.hid WHERE 0=0 AND capacity >= 5 AND rid NOT IN (17, 17)
+        ) AS r0
+        INNER JOIN ehotel.hotel AS "r.H0" ON r0.hid = "r.H0".hid
+    ) AS t ON "r.Amenity".rid = t.rid
+    ORDER BY t.rid; -- Note that not all the filters are appearing in this one because the query is writing itself based on the filters selected. (might be longer or shorter depending on user input)
+
+-- GET RENTING FILTERED BY START AND END DATES --
+
+SELECT * FROM eHotel.renting WHERE (start_date <= {0} AND start_date >= {1}) OR (end_date >= {1} AND end_date <= {0}); -- Note that 0 and 1 are parameters passed to the query.
+
+-- GET BOOKING FILTERED BY START AND END DATES --
+
+SELECT * FROM eHotel.booking WHERE (start_date <= {0} AND start_date >= {1}) OR (end_date >= {1} AND end_date <= {0}); -- Note that 0 and 1 are parameters passed to the query.
+
+-- GET ROOM AMENTIES --
+
+SELECT * FROM eHotel.amenity WHERE rid={0}; -- Note that 0 is a parameter passed to the query.
+
+-- GET ROOM DAMAGES --
+
+SELECT * FROM eHotel.damage WHERE rid={0}; -- Note that 0 is a parameter passed to the query.
+
+-- GET ALL HOTEL INFORMATION --
+
+SELECT h.hid, h.apt_number, h.category, h.city, h.email, h.h_state, h.hcid, h.hotel_name, h.manager, h.num_rooms, h.street_name, h.street_number, h.zip, "h.ManagerNavigation".ssn, "h.ManagerNavigation".date_of_employment, "h.ManagerNavigation".password, "h.ManagerNavigation".username, "h.ManagerNavigation.SsnNavigation".ssn, "h.ManagerNavigation.SsnNavigation".apt_number, "h.ManagerNavigation.SsnNavigation".city, "h.ManagerNavigation.SsnNavigation".full_name, "h.ManagerNavigation.SsnNavigation".p_state, "h.ManagerNavigation.SsnNavigation".street_name, "h.ManagerNavigation.SsnNavigation".street_number, "h.ManagerNavigation.SsnNavigation".zip, "h.Hc".hcid, "h.Hc".apt_number, "h.Hc".city, "h.Hc".hc_state, "h.Hc".hotel_chain_name, "h.Hc".num_hotels, "h.Hc".street_name, "h.Hc".street_number, "h.Hc".zip
+FROM ehotel.hotel AS h
+INNER JOIN ehotel.employee AS "h.ManagerNavigation" ON h.manager = "h.ManagerNavigation".ssn
+INNER JOIN ehotel.person AS "h.ManagerNavigation.SsnNavigation" ON "h.ManagerNavigation".ssn = "h.ManagerNavigation.SsnNavigation".ssn
+INNER JOIN ehotel.hotelchain AS "h.Hc" ON h.hcid = "h.Hc".hcid;
+
+-- GET HOTEL PHONES --
+
+SELECT * FROM eHotel.hotelphone WHERE hid={0}; -- Note that 0 is a parameter passed to the query.
+
+-- GET HOTEL CHAINS --
+
+SELECT h.hcid, h.apt_number, h.city, h.hc_state, h.hotel_chain_name, h.num_hotels, h.street_name, h.street_number, h.zip
+FROM ehotel.hotelchain AS h;
+
+¸-- GET EMPLOYEES --
+
+SELECT p.ssn, p.apt_number, p.city, p.full_name, p.p_state, p.street_name, p.street_number, p.zip, "p.Employee".ssn, "p.Employee".date_of_employment, "p.Employee".password, "p.Employee".username
+FROM ehotel.person AS p
+LEFT JOIN ehotel.employee AS "p.Employee" ON p.ssn = "p.Employee".ssn
+WHERE "p.Employee".ssn IS NOT NULL;
+
+-- INSERT BOOKING FROM SEARCH BY A CUSTOMER --
+
+INSERT INTO eHotel.booking (rid, customer_ssn, start_date, end_date) VALUES ({0},{1},{2},{3}); -- Note that 0, 1, 2, 3 are parameters passed to the query.
+
+-- INSERT RENTING FROM SEARCH BY AN EMPLOYEE --
+
+INSERT INTO eHotel.Renting (rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4}); -- Note that 0, 1, 2, 3, 4 are parameters passed to the query.
+
+-- GET HOTEL STATES --
+
+SELECT DISTINCT h.h_state FROM ehotel.hotel AS h;
+
+-- GET FULL ROOM OBJ --
+
+SELECT r.rid, r.capacity, r.hid, r.isextandable, r.landscape, r.price, r.room_num, "r.H".hid, "r.H".apt_number, "r.H".category, "r.H".city, "r.H".email, "r.H".h_state, "r.H".hcid, "r.H".hotel_name, "r.H".manager, "r.H".num_rooms, "r.H".street_name, "r.H".street_number, "r.H".zip, "r.H.Hc".hcid, "r.H.Hc".apt_number, "r.H.Hc".city, "r.H.Hc".hc_state, "r.H.Hc".hotel_chain_name, "r.H.Hc".num_hotels, "r.H.Hc".street_name, "r.H.Hc".street_number, "r.H.Hc".zip
+FROM ehotel.room AS r
+INNER JOIN ehotel.hotel AS "r.H" ON r.hid = "r.H".hid
+INNER JOIN ehotel.hotelchain AS "r.H.Hc" ON "r.H".hcid = "r.H.Hc".hcid
+WHERE r.rid = @__rid_0
+ORDER BY "r.H".hid
+LIMIT 1;
+
+-- GET ROOMS --
+
+SELECT r.rid, r.capacity, r.hid, r.isextandable, r.landscape, r.price, r.room_num
+FROM ehotel.room AS r
+ORDER BY r.rid;
+
+-- GET AMENITY --
+
+SELECT "r.Amenity".aid, "r.Amenity".amenity, "r.Amenity".rid
+FROM ehotel.amenity AS "r.Amenity"
+INNER JOIN (
+    SELECT r0.rid
+    FROM ehotel.room AS r0
+) AS t ON "r.Amenity".rid = t.rid
+ORDER BY t.rid;
+
+-- GET ROOMS BY HOTEL -- 
+
+SELECT r.rid, r.capacity, r.hid, r.isextandable, r.landscape, r.price, r.room_num
+FROM ehotel.room AS r
+WHERE r.hid = @__hid_0
+ORDER BY r.rid;
+
+-- GET EMPLOYEE WITH ROLES -- 
+
+SELECT p.ssn, p.apt_number, p.city, p.full_name, p.p_state, p.street_name, p.street_number, p.zip, "p.Employee".ssn, "p.Employee".date_of_employment, "p.Employee".password, "p.Employee".username
+FROM ehotel.person AS p
+LEFT JOIN ehotel.employee AS "p.Employee" ON p.ssn = "p.Employee".ssn
+WHERE "p.Employee".ssn IS NOT NULL
+ORDER BY "p.Employee".ssn;
+
+-- GET CUSTOMERS --
+
+SELECT p.ssn, p.apt_number, p.city, p.full_name, p.p_state, p.street_name, p.street_number, p.zip, "p.Customer".ssn, "p.Customer".password, "p.Customer".register_date, "p.Customer".username
+FROM ehotel.person AS p
+LEFT JOIN ehotel.customer AS "p.Customer" ON p.ssn = "p.Customer".ssn
+WHERE "p.Customer".ssn IS NOT NULL;
+
+-- GET FULL BOOKING OBJ --
+
+SELECT b.bid, b.customer_ssn, b.end_date, b.rid, b.start_date, "b.CustomerSsnNavigation".ssn, "b.CustomerSsnNavigation".password, "b.CustomerSsnNavigation".register_date, "b.CustomerSsnNavigation".username, "b.CustomerSsnNavigation.SsnNavigation".ssn, "b.CustomerSsnNavigation.SsnNavigation".apt_number, "b.CustomerSsnNavigation.SsnNavigation".city, "b.CustomerSsnNavigation.SsnNavigation".full_name, "b.CustomerSsnNavigation.SsnNavigation".p_state, "b.CustomerSsnNavigation.SsnNavigation".street_name, "b.CustomerSsnNavigation.SsnNavigation".street_number, "b.CustomerSsnNavigation.SsnNavigation".zip, "b.R".rid, "b.R".capacity, "b.R".hid, "b.R".isextandable, "b.R".landscape, "b.R".price, "b.R".room_num, "b.R.H".hid, "b.R.H".apt_number, "b.R.H".category, "b.R.H".city, "b.R.H".email, "b.R.H".h_state, "b.R.H".hcid, "b.R.H".hotel_name, "b.R.H".manager, "b.R.H".num_rooms, "b.R.H".street_name, "b.R.H".street_number, "b.R.H".zip
+FROM ehotel.booking AS b
+INNER JOIN ehotel.customer AS "b.CustomerSsnNavigation" ON b.customer_ssn = "b.CustomerSsnNavigation".ssn
+INNER JOIN ehotel.person AS "b.CustomerSsnNavigation.SsnNavigation" ON "b.CustomerSsnNavigation".ssn = "b.CustomerSsnNavigation.SsnNavigation".ssn
+INNER JOIN ehotel.room AS "b.R" ON b.rid = "b.R".rid
+INNER JOIN ehotel.hotel AS "b.R.H" ON "b.R".hid = "b.R.H".hid;
+
+-- DELETE BOOKING FROM CUSTOMER ACCOUNT --
+
+DELETE FROM ehotel.booking
+WHERE bid={0};
 
 
 --Delete ASPUSers
