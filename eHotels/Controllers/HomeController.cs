@@ -823,7 +823,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -844,7 +844,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -860,7 +860,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -876,7 +876,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return null;
             }
         }
@@ -892,7 +892,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -908,7 +908,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -931,7 +931,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -947,7 +947,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -963,7 +963,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return null;
             }
         }
@@ -980,7 +980,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -996,7 +996,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1013,7 +1013,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return -1;
             }
         }
@@ -1029,7 +1029,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1046,7 +1046,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return -1;
             }
         }
@@ -1078,7 +1078,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return -1;
             }
         }
@@ -1095,7 +1095,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return null;
             }
         }
@@ -1111,7 +1111,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1127,7 +1127,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1153,7 +1153,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1169,7 +1169,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return null;
             }
         }
@@ -1187,7 +1187,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1203,7 +1203,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1219,7 +1219,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1235,7 +1235,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1251,7 +1251,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -1295,7 +1295,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
