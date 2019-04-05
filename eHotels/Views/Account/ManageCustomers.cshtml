@@ -1,0 +1,81 @@
+﻿@model List<Person>
+@{
+    ViewData["Title"] = "ManagerCustomers";
+}
+
+<h2 id="toTop">Manager the customers</h2>
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
+
+<div class="row" style="padding-top:5%">
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h2 class="panel-title">Customers</h2>
+            </div>
+            <div class="panel-body">
+                <ul id="roleList" class="list-group">
+                    @foreach (var customer in Model)
+                    {
+                        <li class="list-group-item" id="customer@(customer.Ssn)">
+                            @customer.FullName
+                            <a onclick="customerDelete(@customer.Ssn)" class="text-center col-md-2">
+                                <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this customer"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function customerDelete(ssn) {
+            var result = confirm("Are you sure you want to delete this customer (all of the booking of this customer will also be deleted)?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Ssn': ssn
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteCustomer", "Account")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#customer' + ssn).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text("The customer was successfully deleted");
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+    </script>
+}

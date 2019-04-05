@@ -189,7 +189,16 @@ namespace eHotels.Controllers
                 ViewData["ReturnUrl"] = returnUrl;
                 if (ModelState.IsValid)
                 {
-                    Boolean insertResult = createEmployee(model);
+                    Boolean insertResult = checkDuplicateEmail(model.Email);
+                    if (insertResult)
+                    {
+                        insertResult = insertResult && createEmployee(model);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Email", "This email is already taken");
+                        return View(model);
+                    }
                     if (insertResult)
                     {
                         int ssn = Convert.ToInt32(model.SSN);
@@ -457,6 +466,10 @@ namespace eHotels.Controllers
                        "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
                        parameters: insertArray);
                 }
+                else
+                {
+                    updatePerson(model);
+                }
                 return true;
             }
             catch (PostgresException ex)
@@ -606,15 +619,19 @@ namespace eHotels.Controllers
             try
             {
                 //FINDQUERY
-                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Customer WHERE ssn={0}", parameters: Ssn);
+                List<Employee> employee = _context.Employee.FromSql("SELECT * FROM eHotel.Employee WHERE ssn={0}", parameters: Ssn).ToList();
 
-                List<Customer> customer = _context.Customer.FromSql("SELECT * FROM eHotel.Employee WHERE ssn={0}", parameters: Ssn).ToList();
                 int pDelete = 0;
-                if (customer.Count == 0)
+                if (employee.Count == 0)
                 {
                     pDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Person WHERE ssn={0}", parameters: Ssn);
                 }
-                return numDelete == 1 && pDelete == 1;
+                else
+                {
+                    pDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Customer WHERE ssn={0}", parameters: Ssn);
+                }
+                var delete = _context.Database.ExecuteSqlCommand("DELETE FROM public.\"AspNetUsers\" WHERE \"SSN\"={0} AND \"Role\"={1}", parameters: new Object[] { Ssn, Constants.CUSTOMER });
+                return delete == 1 && pDelete == 1;
             }
             catch (PostgresException ex)
             {
