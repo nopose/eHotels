@@ -109,6 +109,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -118,6 +119,7 @@
                         else {
                             $('#role' + index).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The role was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -152,6 +154,7 @@
             success: function (data) {
                 if (data.includes("Error")) {
                     $("#topList").fadeIn();
+                    $("#topSuccess").text("");
                     $("#topError").text(data);
                     setTimeout(function () {
                         $("#topList").fadeOut();
@@ -170,6 +173,7 @@
                     `
                     );
                     $("#topList").fadeIn();
+                    $("#topError").text("");
                     $("#topSuccess").text("The role was successfully added");
                     setTimeout(function () {
                         $("#topList").fadeOut();
@@ -206,6 +210,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -215,6 +220,7 @@
                         else {
                             $('#employee' + ssn).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The employee was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();

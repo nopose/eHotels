@@ -198,6 +198,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -207,6 +208,7 @@
                         else {
                             $('#damage' + index).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The damage was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -242,6 +244,7 @@
                 console.log(data);
                 if (data.toString().includes("Error")) {
                     $("#topList").fadeIn();
+                    $("#topSuccess").text("");
                     $("#topError").text(data);
                     setTimeout(function () {
                         $("#topList").fadeOut();
@@ -260,6 +263,7 @@
                     `
                     );
                     $("#topList").fadeIn();
+                    $("#topError").text("");
                     $("#topSuccess").text("The damage was successfully added");
                     setTimeout(function () {
                         $("#topList").fadeOut();
@@ -291,6 +295,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -300,6 +305,7 @@
                         else {
                             $('#amenity' + index).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The amenity was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -334,6 +340,7 @@
                 console.log(data);
                 if (data.toString().includes("Error")) {
                     $("#topList").fadeIn();
+                    $("#topSuccess").text("");
                     $("#topError").text(data);
                     setTimeout(function () {
                         $("#topList").fadeOut();
@@ -352,6 +359,7 @@
                     `
                     );
                     $("#topList").fadeIn();
+                    $("#topError").text("");
                     $("#topSuccess").text("The amenity was successfully added");
                     setTimeout(function () {
                         $("#topList").fadeOut();

@@ -90,6 +90,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -99,6 +100,7 @@
                         else {
                             $('#room' + room).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The room was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();

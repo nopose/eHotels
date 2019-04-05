@@ -171,6 +171,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -180,6 +181,7 @@
                         else {
                             $('#phone' + index).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The phone number was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -214,6 +216,7 @@
             success: function (data) {
                 if (data.includes("Error")) {
                     $("#topList").fadeIn();
+                    $("#topSuccess").text("");
                     $("#topError").text(data);
                     setTimeout(function () {
                         $("#topList").fadeOut();
@@ -232,6 +235,7 @@
                     `
                     );
                     $("#topList").fadeIn();
+                    $("#topError").text("");
                     $("#topSuccess").text("The phone number was successfully added");
                     setTimeout(function () {
                         $("#topList").fadeOut();

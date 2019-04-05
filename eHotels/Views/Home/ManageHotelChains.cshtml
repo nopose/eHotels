@@ -70,6 +70,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -79,6 +80,7 @@
                         else {
                             $('#hotelChain' + hotelChain).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The hotel chain and associated hotels and rooms were successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();

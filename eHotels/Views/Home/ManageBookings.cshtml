@@ -80,6 +80,7 @@
                     success: function (data) {
                         if (data.includes("Error")) {
                             $("#topList").fadeIn();
+                            $("#topSuccess").text("");
                             $("#topError").text(data);
                             setTimeout(function () {
                                 $("#topList").fadeOut();
@@ -89,6 +90,7 @@
                         else {
                             $('#booking' + booking).remove();
                             $("#topList").fadeIn();
+                            $("#topError").text("");
                             $("#topSuccess").text("The booking was successfully deleted");
                             setTimeout(function () {
                                 $("#topList").fadeOut();
