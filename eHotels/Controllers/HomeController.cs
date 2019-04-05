@@ -548,6 +548,28 @@ namespace eHotels.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteBooking([FromBody]Booking data)
+        {
+            if (isEmployee())
+            {
+                if (deleteBooking(Convert.ToInt32(data.Bid)))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the booking");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
         [HttpGet]
         public IActionResult ArchiveRenting()
         {
@@ -1075,6 +1097,22 @@ namespace eHotels.Controllers
                 //TODO better error handling
                 TempData["ErrorMessage"] = ex.MessageText;
                 return null;
+            }
+        }
+
+        private Boolean deleteBooking(int Bid)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.booking WHERE bid={0}", parameters: Bid);
+                return numDelete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
             }
         }
 
