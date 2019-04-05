@@ -13,5 +13,7 @@ namespace eHotels.Models
 
         public const int SEAVIEW = 0;
         public const int MOUNTAINVIEW = 1;
+
+        public const string GENERICPOSTGREERROR = "Error: There is a problem with the system, please contact the support administrator.";
     }
 }

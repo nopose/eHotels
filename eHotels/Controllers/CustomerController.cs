@@ -47,8 +47,8 @@ namespace eHotels.Controllers
             {
                 // Filter values
                 isUsingTodaysRooms = false,
-                StartDate = DateTime.Today.AddHours(16),
-                EndDate = DateTime.Today.AddDays(1).AddHours(12),
+                StartDate = DateTime.Today.AddDays(1).AddHours(16),
+                EndDate = DateTime.Today.AddDays(2).AddHours(12),
                 Capacity = null,
                 NumberOfRooms = null,
                 PriceOfRooms = null,
@@ -159,7 +159,7 @@ namespace eHotels.Controllers
 
             }
 
-            StatusMessage = "Exactly " + model.Rooms.Count.ToString() + " have been loaded.";
+            TempData["StatusMessage"] = "Exactly " + model.Rooms.Count.ToString() + " have been loaded.";
 
             return View(model);
         }
@@ -234,6 +234,30 @@ namespace eHotels.Controllers
 
         #endregion
 
+        #region DeleteBooking
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteBooking([FromBody] Booking booking)
+        {
+            DBManipulation db = new DBManipulation(_context);
+            int response = db.deleteBooking(booking.Bid, getUser().SSN);
+            string json;
+
+            if (response == 1)
+                json = "Booking successfully deleted from your account!";
+            else if (response == 0)
+                json = "Error: User didn't found in the Database, please try again..";
+            else if (response == -1)
+                json = "Error: Impossible to delete the selected booking, please try again..";
+            else
+                json = Constants.GENERICPOSTGREERROR;
+
+            return Json(json);
+        }
+
+        #endregion
+
         #region CustomerBookings
 
         public IActionResult CustomerBookings()
@@ -276,7 +300,10 @@ namespace eHotels.Controllers
                 catch (Npgsql.PostgresException ex)
                 {
                     //Log the error (uncomment ex variable name and write a log.
-                    TempData["ErrorMessage"] = ex.Message;
+                    if (ex.ErrorCode == 23503)
+                        TempData["ErrorMessage"] = "The SSN entered doesn't match any existing customer in the Database, please try again.";
+                    else
+                        TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 }
                 return RedirectToAction("Index");
             }

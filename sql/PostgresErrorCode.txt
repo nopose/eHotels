@@ -5,6 +5,8 @@ CODE
 
 23502: Messagetext:null value in column \"full_name\" violates not-null constraint			Detail:"Failing row contains (243712347, null, 3, dfsaasdf, 3, sfadfdas, XS, 123wer)."
 
+23503: insert or update on table "renting" violates foreign key constraint "booking_customer_fkey"
+
 
 
 

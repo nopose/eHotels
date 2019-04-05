@@ -272,5 +272,24 @@ namespace eHotels.Data
             //FINDQUERY
             return _context.ViewTwo.FromSql("SELECT * FROM eHotel.capacity_room WHERE hid={0}", hid).ToList();
         }
+
+        public int deleteBooking(int bid, int ssn)
+        {
+            try
+            {
+                //FINDQUERY
+                if (_context.Customer.FirstOrDefault(c => c.Ssn == ssn) != null)
+                {
+                    _context.Booking.Remove(_context.Booking.Find(bid));
+                    _context.SaveChanges();
+                    return 1;
+                }
+                return 0;
+            }
+            catch (Npgsql.PostgresException)
+            {
+                return -1;
+            }        
+        }
     }
 }
