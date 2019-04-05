@@ -498,7 +498,6 @@ namespace eHotels.Controllers
         }
         #endregion
 
-
         #region Helpers
 
         private void AddErrors(IdentityResult result)

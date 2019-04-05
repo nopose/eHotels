@@ -26,9 +26,16 @@
     }
 </style>
 
-<h2>My bookings</h2>
+<h2 id="toTop">My bookings</h2>
 <h5>Note that these bookings are those that haven't passed yet.</h5>
 <hr />
+
+<div id="topList" class="row" style="display:none">
+    <div class="col-md-12">
+        <h3><span id="topError" class="label label-danger"></span></h3>
+        <h3><span id="topSuccess" class="label label-success"></span></h3>
+    </div>
+</div>
 
 <div class="box">
     <div class="container">
@@ -38,7 +45,7 @@
                 int index = 1;
                 @foreach (Booking b in Model)
                 {
-                    <div id="@b.Bid" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div id="booking@(b.Bid)" class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
                         <div class="box-part text-center">
 
                             <div class="title">
@@ -67,6 +74,10 @@
                                 <h4>@b.StartDate.ToString("dd MMMM yyyy") - @b.EndDate.ToString("dd MMMM yyyy")</h4>
                                 <h6><em>(@((b.EndDate - b.StartDate).Days + 1) Nights)</em></h6>
                             </div>
+
+                            <div>
+                                <a onclick="deleteBooking(@b.Bid);"><span class="glyphicon glyphicon-trash"></span></a>
+                            </div>
                         </div>
                     </div>
                     index = index + 1;
@@ -81,3 +92,44 @@
     @await Html.PartialAsync("_feedbackScripts")
 }
 
+<script>
+    function deleteBooking(bid) {
+            var result = confirm("Are you sure you want to delete this room?");
+            if (result) {
+                var json = JSON.stringify({
+                    'Bid': bid.toString()
+                });
+
+                $.ajax({
+                    url: '@Url.Action("DeleteBooking", "Customer")',
+                    type: "POST",
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: json,
+                    success: function (data) {
+                        if (data.includes("Error")) {
+                            $("#topList").fadeIn();
+                            $("#topError").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                        else {
+                            $('#booking' + bid).remove();
+                            $("#topList").fadeIn();
+                            $("#topSuccess").text(data);
+                            setTimeout(function () {
+                                $("#topList").fadeOut();
+                            }, 5000);
+                            $("#toTop").get(0).scrollIntoView();
+                        }
+                    },
+                    error: function () {
+                        console.log("An error happened");
+                    }
+                });
+            }
+        }
+</script>
