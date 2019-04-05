@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +19,6 @@ namespace eHotels.Data
 
         public Person getCustomer(int ssn)
         {
-            //FINDQUERY
             return _context.Person
                 .Include(p => p.Customer)
                 .Where(p => p.Customer != null && p.Ssn == ssn).First();
@@ -26,7 +26,6 @@ namespace eHotels.Data
 
         public List<Person> getCustomers()
         {
-            //FINDQUERY
             return _context.Person
                 .Include(p => p.Customer)
                 .Where(p => p.Customer != null).ToList();
@@ -34,7 +33,6 @@ namespace eHotels.Data
 
         public Person getEmployee(int ssn)
         {
-            //FINDQUERY
             return _context.Person
                 .Include(p => p.Employee)
                 .Where(p => p.Employee != null && p.Ssn == ssn).First();
@@ -47,7 +45,6 @@ namespace eHotels.Data
 
         public List<Person> getEmployeesWithRoles()
         {
-            //FINDQUERY
             return _context.Person
                 .Include(p => p.Employee)
                     .ThenInclude(e => e.Role)
@@ -81,7 +78,6 @@ namespace eHotels.Data
 
         public List<Room> getRooms()
         {
-            //FINDQUERY
             return _context.Room
                 .Include(r => r.Amenity)
                 .Include(r => r.Damage)
@@ -90,7 +86,6 @@ namespace eHotels.Data
 
         public List<Room> getRooms(int hid)
         {
-            //FINDQUERY
             return _context.Room
                 .Where(r => r.Hid == hid)
                 .Include(r => r.Amenity)
@@ -108,16 +103,8 @@ namespace eHotels.Data
             return _context.Amenity.FromSql("SELECT * FROM eHotel.amenity WHERE rid={0}", parameters: rid).ToList();
         }
 
-
-        public List<string> getHotelCities()
-        {
-            //FINDQUERY
-            return _context.Hotel.Select(h => h.City).Distinct().ToList();
-        }
-
         public List<string> getHotelStates()
         {
-            //FINDQUERY
             return _context.Hotel.Select(h => h.HState).Distinct().ToList();
         }
 
@@ -133,7 +120,6 @@ namespace eHotels.Data
 
         public Room getRoom(int rid)
         {
-            //FINDQUERY
             return _context.Room
                 .Include(r => r.H)
                     .ThenInclude(h => h.Hc)
@@ -150,7 +136,6 @@ namespace eHotels.Data
 
         public List<Booking> getBookings()
         {
-            //FINDQUERY
             return _context.Booking
                 .Include(b => b.R)
                     .ThenInclude(r => r.H)
@@ -159,7 +144,6 @@ namespace eHotels.Data
 
         public List<Booking> getBookings(int hid)
         {
-            //FINDQUERY
             return _context.Booking
                 .Include(b => b.R)
                     .ThenInclude(r => r.H)
@@ -169,7 +153,6 @@ namespace eHotels.Data
 
         public List<Booking> getPersonBookings(int ssn)
         {
-            //FINDQUERY
             return _context.Booking
                 .Include(b => b.R)
                     .ThenInclude(r => r.H)
@@ -179,7 +162,6 @@ namespace eHotels.Data
 
         public List<Booking> getBookingsFullNav()
         {
-            //FINDQUERY
             return _context.Booking
                 .Include(b => b.R)
                     .ThenInclude(r => r.H)
@@ -190,7 +172,6 @@ namespace eHotels.Data
 
         public List<Booking> getBookingsFullNav(int hid)
         {
-            //FINDQUERY
             return _context.Booking
                 .Include(b => b.R)
                     .ThenInclude(r => r.H)
@@ -234,7 +215,6 @@ namespace eHotels.Data
         {
             try
             {
-                //FINDQUERY
                 if (_context.Customer.FirstOrDefault(c => c.Ssn == ssn) != null)
                 {
                     _context.Booking.Remove(_context.Booking.Find(bid));
