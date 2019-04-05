@@ -22,7 +22,7 @@ VALUES (345456567, '2019-04-01', 'jcaruf@gmail.com', 'jeanlou'),
 --Hotel Chains
 INSERT INTO ehotel.hotelchain (hotel_chain_name,street_number,street_name,apt_number,city,hc_state,zip,num_hotels) 
 VALUES ('Magna Hotels',3586, 'Netus Road',32,'Carson City','NV','87143',0),
-('Nisi Hotels',611,'Vehicula Rd.',55,'Louisville','Kentucky','84522',0),
+('Nisi Hotels',611,'Vehicula Rd.',55,'Louisville','KY','84522',0),
 ('Sagittis Corporation',404,'Eleifend Street',41,'Chattanooga','TN','72781',0),
 ('Velit Hotels Inc',1362, 'Risus Avenue',46,'Salt Lake City','UT','42153',0),
 ('Parturient',9466, 'Sem Street',56,'Pike Creek','DE','77621',0);
