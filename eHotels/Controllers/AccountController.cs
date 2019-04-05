@@ -238,7 +238,6 @@ namespace eHotels.Controllers
         [HttpGet]
         public IActionResult UpdateUser(string returnUrl = null)
         {
-            //FINDQUERY
             ViewData["ReturnUrl"] = returnUrl;
             ApplicationUser user = getUser();
             Person userPerson = _context.Person.FromSql("SELECT * FROM eHotel.person WHERE SSN={0}", parameters: user.SSN).ToList()[0];
@@ -292,7 +291,6 @@ namespace eHotels.Controllers
         {
             if (isEmployee())
             {
-                //FINDQUERY
                 ViewData["ReturnUrl"] = returnUrl;
                 RoleViewModel model = new RoleViewModel(_context);
                 return View(model);
@@ -375,7 +373,6 @@ namespace eHotels.Controllers
         {
             if (isEmployee())
             {
-                //FINDQUERY
                 List<Person> model = new DBManipulation(_context).getCustomers();
                 return View(model);
             }
@@ -462,7 +459,6 @@ namespace eHotels.Controllers
             {
                 if (person.Count == 0)
                 {
-                    //FINDQUERY
                     _context.Database.ExecuteSqlCommand(
                        "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
                        parameters: insertArray);
@@ -487,7 +483,6 @@ namespace eHotels.Controllers
                 model.AptNumber,model.City,model.PState,model.Zip,model.Ssn };
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand(
                    "UPDATE eHotel.Person SET full_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, p_state={5}, zip={6} " +
                    "WHERE ssn={7}",
@@ -506,7 +501,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Object[] insertArray = new object[] { model.Ssn, model.RegisterDate, model.Username, model.Password };
                 _context.Database.ExecuteSqlCommand(
                    "INSERT INTO eHotel.Customer VALUES ({0},{1},{2},{3})",
@@ -548,7 +542,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Object[] insertArray = new object[] { model.Ssn, model.DateOfEmployment, model.Username, model.Password };
                 _context.Database.ExecuteSqlCommand(
                    "INSERT INTO eHotel.Employee VALUES ({0},{1},{2},{3})",
@@ -573,7 +566,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Role WHERE employee_ssn={0} AND role={1}", parameters: new object[] { Ssn, role });
                 return numDelete == 1;
             }
@@ -589,7 +581,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Role VALUES ({0},{1})", parameters: new object[] { role, Ssn});
                 return true;
             }
@@ -605,7 +596,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 List<Customer> customer = _context.Customer.FromSql("SELECT * FROM eHotel.Customer WHERE ssn={0}", parameters: Ssn).ToList();
 
                 int pDelete = 0;
@@ -649,7 +639,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 List<Employee> employee = _context.Employee.FromSql("SELECT * FROM eHotel.Employee WHERE ssn={0}", parameters: Ssn).ToList();
 
                 int pDelete = 0;
