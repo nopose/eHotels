@@ -359,7 +359,8 @@ namespace eHotels.Controllers
                 }
                 else
                 {
-                    return Json("Error: Could not delete the employee");
+                    var json = TempData["ErrorMessage"];
+                    return Json("Error: " + json);
                 }
             }
             else
@@ -475,7 +476,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -496,7 +497,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -514,8 +515,14 @@ namespace eHotels.Controllers
             }
             catch (PostgresException ex)
             {
-                //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                if (ex.Code.Equals("23505"))
+                {
+                    TempData["ErrorMessage"] = "There is already a customer with this SSN";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
+                }
                 return false;
             }
         }
@@ -550,8 +557,14 @@ namespace eHotels.Controllers
             }
             catch (PostgresException ex)
             {
-                //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                if (ex.Code.Equals("23505"))
+                {
+                    TempData["ErrorMessage"] = "There is already an employee with this SSN";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
+                }
                 return false;
             }
         }
@@ -567,7 +580,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -583,7 +596,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }
@@ -608,8 +621,26 @@ namespace eHotels.Controllers
             }
             catch (PostgresException ex)
             {
+                if(ex.Code.Equals("23503"))
+                {
+                    if (ex.ConstraintName.Equals("hotel_employee_fkey"))
+                    {
+                        TempData["ErrorMessage"] = "This employee is manager of a hotel. You cannot delete it without changing the manager for the hotel";
+                    }
+                    else if (ex.ConstraintName.Equals("renting_employee_fkey"))
+                    {
+                        TempData["ErrorMessage"] = "This employee is associated to rentings. You cannot delete it without deleting or archiving these rentings";
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
+                    }
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
+                }
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
                 return false;
             }
         }
@@ -636,7 +667,7 @@ namespace eHotels.Controllers
             catch (PostgresException ex)
             {
                 //TODO better error handling
-                TempData["ErrorMessage"] = ex.MessageText;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
                 return false;
             }
         }

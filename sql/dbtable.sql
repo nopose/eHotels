@@ -155,13 +155,13 @@ CREATE TABLE  eHotel.renting(
 	employee_ssn INT NOT NULL,
 	start_date TIMESTAMP NOT NULL,
 	end_date TIMESTAMP NOT NULL,
-	CONSTRAINT booking_room_fkey FOREIGN KEY (rID)
+	CONSTRAINT renting_room_fkey FOREIGN KEY (rID)
       REFERENCES eHotel.room (rID) MATCH SIMPLE
 	  ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT booking_customer_fkey FOREIGN KEY (customer_ssn)
+	CONSTRAINT renting_customer_fkey FOREIGN KEY (customer_ssn)
       REFERENCES eHotel.customer (ssn) MATCH SIMPLE
 	  ON UPDATE CASCADE ON DELETE CASCADE,
-	CONSTRAINT booking_employee_fkey FOREIGN KEY (employee_ssn)
+	CONSTRAINT renting_employee_fkey FOREIGN KEY (employee_ssn)
       REFERENCES eHotel.employee (ssn) MATCH SIMPLE
 );
 
