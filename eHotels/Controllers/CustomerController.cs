@@ -227,7 +227,7 @@ namespace eHotels.Controllers
             catch (Npgsql.PostgresException ex)
             {
                 //Log the error (uncomment ex variable name and write a log.
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
             }
             return View(newBooking);
         }
@@ -300,7 +300,7 @@ namespace eHotels.Controllers
                 catch (Npgsql.PostgresException ex)
                 {
                     //Log the error (uncomment ex variable name and write a log.
-                    if (ex.ErrorCode == 23503)
+                    if (ex.SqlState == "23503")
                         TempData["ErrorMessage"] = "The SSN entered doesn't match any existing customer in the Database, please try again.";
                     else
                         TempData["ErrorMessage"] = Constants.GENERICPOSTGREERROR;
