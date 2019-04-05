@@ -125,7 +125,7 @@ namespace eHotels.Controllers
                 }
 
                 if (model.StateSelected != null) {
-                    qry += " AND h_state = " + model.StateSelected;
+                    qry += " AND h_state = '" + model.StateSelected + "'";
                 }
 
                 if (model.NumberOfRooms != null) {
