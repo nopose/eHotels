@@ -29,8 +29,6 @@ namespace eHotels.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
 
-       
-
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -125,8 +123,17 @@ namespace eHotels.Controllers
             ModelState.Remove("DateEmployment");
             if (ModelState.IsValid)
             {
-                Boolean insertResult = createCustomer(model);
-                if(insertResult)
+                Boolean insertResult = checkDuplicateEmail(model.Email);
+                if (insertResult)
+                {
+                    insertResult = insertResult && createCustomer(model);
+                }
+                else
+                {
+                    ModelState.AddModelError("Email", "This email is already taken");
+                    return View(model);
+                }
+                if (insertResult)
                 {
                     int ssn = Convert.ToInt32(model.SSN);
                     var user = new ApplicationUser
@@ -219,7 +226,6 @@ namespace eHotels.Controllers
         #endregion
 
         #region Update
-
         [HttpGet]
         public IActionResult UpdateUser(string returnUrl = null)
         {
@@ -270,7 +276,7 @@ namespace eHotels.Controllers
 
         #endregion
 
-        #region
+        #region ManageUsers
 
         [HttpGet]
         public IActionResult ManageRoles(string returnUrl = null)
@@ -332,6 +338,65 @@ namespace eHotels.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteEmployee([FromBody]Employee data)
+        {
+            if (isEmployee())
+            {
+                if (deleteEmployee(data.Ssn))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the employee");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
+        [HttpGet]
+        public IActionResult ManageCustomers()
+        {
+            if (isEmployee())
+            {
+                //FINDQUERY
+                List<Person> model = new DBManipulation(_context).getCustomers();
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteCustomer([FromBody]Customer data)
+        {
+            if (isEmployee())
+            {
+                if (deleteCustomer(data.Ssn))
+                {
+                    return Json("Success");
+                }
+                else
+                {
+                    return Json("Error: Could not delete the customer");
+                }
+            }
+            else
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
+        }
+
         #endregion
 
         [HttpGet]
@@ -342,6 +407,15 @@ namespace eHotels.Controllers
         }
 
         #region DBLogic
+        private Boolean checkDuplicateEmail(string Email)
+        {
+            var user = _userManager.FindByEmailAsync(Email);
+            user.Wait();
+            var result = user.Result;
+
+            return result == null;
+        }
+
         private Boolean createCustomer(RegisterViewModel model)
         {
             Boolean result = insertPerson(new Person
@@ -373,12 +447,16 @@ namespace eHotels.Controllers
         {
             Object[] insertArray = new object[] {model.Ssn,model.FullName,model.StreetNumber,model.StreetName,
                 model.AptNumber,model.City,model.PState,model.Zip };
+            List<Person> person = _context.Person.FromSql("SELECT * FROM eHotel.Person WHERE ssn={0}", parameters: model.Ssn).ToList();
             try
             {
-                //FINDQUERY
-                _context.Database.ExecuteSqlCommand(
-                   "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
-                   parameters: insertArray);
+                if (person.Count == 0)
+                {
+                    //FINDQUERY
+                    _context.Database.ExecuteSqlCommand(
+                       "INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})",
+                       parameters: insertArray);
+                }
                 return true;
             }
             catch (PostgresException ex)
@@ -488,6 +566,55 @@ namespace eHotels.Controllers
                 //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Role VALUES ({0},{1})", parameters: new object[] { role, Ssn});
                 return true;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean deleteEmployee(int Ssn)
+        {
+            try
+            {
+                //FINDQUERY
+                List<Customer> customer = _context.Customer.FromSql("SELECT * FROM eHotel.Customer WHERE ssn={0}", parameters: Ssn).ToList();
+
+                int pDelete = 0;
+                if(customer.Count == 0)
+                {
+                    pDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Person WHERE ssn={0}", parameters: Ssn);
+                }
+                else {
+                    pDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Employee WHERE ssn={0}", parameters: Ssn);
+                }
+                var delete = _context.Database.ExecuteSqlCommand("DELETE FROM public.\"AspNetUsers\" WHERE \"SSN\"={0} AND \"Role\"={1}", parameters: new Object[] { Ssn, Constants.EMPLOYEE });
+                return pDelete == 1 && delete == 1;
+            }
+            catch (PostgresException ex)
+            {
+                //TODO better error handling
+                TempData["ErrorMessage"] = ex.MessageText;
+                return false;
+            }
+        }
+
+        private Boolean deleteCustomer(int Ssn)
+        {
+            try
+            {
+                //FINDQUERY
+                var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Customer WHERE ssn={0}", parameters: Ssn);
+
+                List<Customer> customer = _context.Customer.FromSql("SELECT * FROM eHotel.Employee WHERE ssn={0}", parameters: Ssn).ToList();
+                int pDelete = 0;
+                if (customer.Count == 0)
+                {
+                    pDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Person WHERE ssn={0}", parameters: Ssn);
+                }
+                return numDelete == 1 && pDelete == 1;
             }
             catch (PostgresException ex)
             {
