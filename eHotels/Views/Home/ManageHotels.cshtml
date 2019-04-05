@@ -10,6 +10,15 @@
         <h3><span id="topSuccess" class="label label-success"></span></h3>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md-8">
+        <a asp-area="" asp-controller="Home" asp-action="CreateHotel" class="btn btn-primary col-md-6">Add a new hotel</a>
+    </div>
+</div>
+
+<hr />
+
 <div class="row">
     <div class="col-md-8">
         @foreach (var item in Model)
@@ -44,12 +53,6 @@
                 </div>
             </div>
         }
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-8">
-        <a asp-area="" asp-controller="Home" asp-action="CreateHotel" class="btn btn-primary col-md-6">Add a new hotel</a>
     </div>
 </div>
 
