@@ -7,7 +7,7 @@ CREATE TABLE eHotel.person (
 	street_name VARCHAR(50) NOT NULL,
 	apt_number INT,
 	city VARCHAR(50) NOT NULL,
-	p_state VARCHAR(50) NOT NULL,
+	p_state VARCHAR(2) NOT NULL,
 	zip VARCHAR(6) NOT NULL
 );
 
@@ -38,7 +38,7 @@ CREATE TABLE eHotel.hotelChain (
 	street_name VARCHAR(50) NOT NULL,
 	apt_number INT,
 	city VARCHAR(50) NOT NULL,
-	hc_state VARCHAR(50) NOT NULL,
+	hc_state VARCHAR(2) NOT NULL,
 	zip VARCHAR(6) NOT NULL,
 	num_hotels INT NOT NULL DEFAULT 0
 );
@@ -54,7 +54,7 @@ CREATE TABLE eHotel.hotel (
 	street_name VARCHAR(50) NOT NULL,
 	apt_number INT,
 	city VARCHAR(50) NOT NULL,
-	h_state VARCHAR(50) NOT NULL,
+	h_state VARCHAR(2) NOT NULL,
 	zip VARCHAR(6) NOT NULL,
 	email VARCHAR(355) NOT NULL,
 	
