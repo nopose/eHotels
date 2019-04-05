@@ -1,0 +1,127 @@
+--Get Person with ssn
+SELECT * FROM eHotel.person WHERE SSN={0}
+
+--Create Person
+INSERT INTO eHotel.Person VALUES ({0},{1},{2},{3},{4},{5},{6},{7})
+
+--Edit Person
+UPDATE eHotel.Person SET full_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, p_state={5}, zip={6} WHERE ssn={7}
+
+--Delete Person
+DELETE FROM eHotel.Person WHERE ssn={0}
+
+--Get customer with ssn
+SELECT * FROM eHotel.Customer WHERE ssn={0}
+
+--Create Customer
+INSERT INTO eHotel.Customer VALUES ({0},{1},{2},{3})
+
+--Delete Customer
+DELETE FROM eHotel.Customer WHERE ssn={0}
+
+--Get Employee with ssn
+SELECT * FROM eHotel.Employee WHERE ssn={0}
+
+--Create Employee
+INSERT INTO eHotel.Employee VALUES ({0},{1},{2},{3})
+
+--Delete Employee
+DELETE FROM eHotel.Employee WHERE ssn={0}
+
+--Delete role
+DELETE FROM eHotel.Role WHERE employee_ssn={0} AND role={1}
+
+--Create role
+INSERT INTO eHotel.Role VALUES ({0},{1})
+
+--Delete HotelChain
+DELETE FROM eHotel.hotelchain WHERE hcid={0}
+
+--Create HotelChain
+INSERT INTO eHotel.hotelchain (hotel_chain_name,street_number,street_name,apt_number,city,hc_state,zip,num_hotels) VALUES ({0},{1},{2},{3},{4},{5},{6},{7})
+
+--Get HotelChain with id
+SELECT * FROM eHotel.hotelchain WHERE Hcid={0}
+
+--Edit HotelChain
+UPDATE eHotel.hotelchain SET hotel_chain_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, hc_state={5}, zip={6} WHERE hcid={7}
+
+--Delete HotelChainPhone
+DELETE FROM eHotel.hotelchainphone WHERE hcid={0} AND phone_number={1}
+
+--Create HotelChainPhone
+INSERT INTO eHotel.hotelchainphone VALUES ({0},{1})
+
+--Delete HotelChainEmail
+DELETE FROM eHotel.hotelchainemail WHERE hcid={0} AND email={1}
+
+--Create HotelChainPhone
+INSERT INTO eHotel.hotelchainemail VALUES ({0},{1})
+
+--Create Hotel
+INSERT INTO eHotel.Hotel (hcid,hotel_name,manager,category,num_rooms,street_number,street_name,apt_number,city,h_state,zip,email) VALUES ({0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11})
+
+--Edit Hotel
+UPDATE eHotel.Hotel SET hcid={0}, hotel_name={1}, manager={2}, category={3}, street_number={4}, street_name={5}, apt_number={6}, city={7}, h_state={8}, zip={9}, email={10} WHERE hid={11}
+
+--Delete Hotel
+DELETE FROM eHotel.Hotel WHERE hid={0}
+
+--Get Hotel with id
+SELECT * FROM eHotel.hotel WHERE Hid={0}
+
+--Delete Hotelphone
+DELETE FROM eHotel.HotelPhone WHERE hid={0} AND phone_number={1}
+
+--Create HotelPhone
+INSERT INTO eHotel.hotelphone VALUES ({0},{1})
+
+--Create Room
+INSERT INTO eHotel.Room (room_num,hid,price,capacity,isextandable,landscape) VALUES ({0},{1},{2},{3},{4},{5})
+
+--Delete Room
+DELETE FROM eHotel.Room WHERE rid={0}
+
+--Get Room with id
+SELECT * FROM eHotel.room WHERE rid={0}
+
+--Edit Room
+UPDATE eHotel.room SET room_num={0},hid={1},price={2},capacity={3},isextandable={4},landscape={5} WHERE rid={6}
+
+--Delete Damage
+DELETE FROM eHotel.Damage WHERE did={0}
+
+--Create Damage
+INSERT INTO eHotel.Damage (damage,rid) VALUES ({0},{1})
+
+--Delete Amenity
+DELETE FROM eHotel.Amenity WHERE aid={0}
+
+--Create Amenity
+INSERT INTO eHotel.Amenity (amenity,rid) VALUES ({0},{1})
+
+--Get Booking with id
+SELECT * FROM eHotel.Booking WHERE bid={0}
+
+--Delete Booking
+DELETE FROM eHotel.Booking WHERE bid={0}
+
+--Delete Renting
+DELETE FROM eHotel.renting WHERE rentid IN({0})
+
+--Create Renting
+INSERT INTO eHotel.Renting (rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4})
+
+--Create BookingArc
+INSERT INTO eHotel.bookingarc (baid,rid,customer_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4})
+
+--Create RentingArc
+INSERT INTO eHotel.rentingarc (rentaid,rid,customer_ssn,employee_ssn,start_date,end_date) VALUES ({0},{1},{2},{3},{4},{5})
+
+
+
+
+
+
+--Delete ASPUSers
+DELETE FROM public.\"AspNetUsers\" WHERE \"SSN\"={0} AND \"Role\"={1}

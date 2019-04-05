@@ -811,7 +811,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Object[] insertArray = new object[] { model.Hcid, model.HotelName, model.Manager, model.Category, model.NumRooms, model.StreetNumber, model.StreetName,
                 model.AptNumber, model.City,model.HState,model.Zip, model.Email };
                 _context.Database.ExecuteSqlCommand(
@@ -834,7 +833,6 @@ namespace eHotels.Controllers
                 model.AptNumber, model.City,model.HState,model.Zip, model.Email, model.Hid };
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand(
                    "UPDATE eHotel.Hotel SET hcid={0}, hotel_name={1}, manager={2}, category={3}, street_number={4}, street_name={5}, apt_number={6}, city={7}, h_state={8}, zip={9}, email={10} " +
                    "WHERE hid={11}",
@@ -853,7 +851,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Hotel WHERE hid={0}", parameters: Hid);
                 return numDelete == 1;
             }
@@ -869,7 +866,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Hotel hotel = _context.Hotel.FromSql("SELECT * FROM eHotel.hotel WHERE Hid={0}", parameters: Hid).ToList()[0];
                 return hotel;
             }
@@ -885,7 +881,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.HotelPhone WHERE hid={0} AND phone_number={1}", parameters: new object[] { Hid, PhoneNumber});
                 return numDelete == 1;
             }
@@ -901,7 +896,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelphone VALUES ({0},{1})", parameters: new object[] { PhoneNumber, Hid });
                 return true;
             }
@@ -922,7 +916,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Object[] insertArray = new object[] { model.RoomNum, model.Hid, model.Price, model.Capacity, model.Isextandable, model.Landscape };
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Room (room_num,hid,price,capacity,isextandable,landscape)" +
                    "VALUES ({0},{1},{2},{3},{4},{5})", parameters: insertArray);
@@ -940,7 +933,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Room WHERE rid={0}", parameters: Rid);
                 return numDelete == 1;
             }
@@ -956,7 +948,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Room room = _context.Room.FromSql("SELECT * FROM eHotel.room WHERE rid={0}", parameters: rid).ToList()[0];
                 return room;
             }
@@ -972,7 +963,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Object[] insertArray = new object[] { model.RoomNum, model.Hid, model.Price, model.Capacity, model.Isextandable, model.Landscape, model.Rid };
                 _context.Database.ExecuteSqlCommand("UPDATE eHotel.room SET room_num={0},hid={1},price={2},capacity={3},isextandable={4},landscape={5} WHERE rid={6}", parameters: insertArray);
                 return true;
@@ -989,7 +979,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Damage WHERE did={0}", parameters: Did);
                 return numDelete == 1;
             }
@@ -1005,7 +994,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Damage (damage,rid) VALUES ({0},{1})", parameters: new object[] { damage, Rid });
                 var damageResult = _context.Damage.FromSql("SELECT * FROM eHotel.Damage WHERE damage={0} AND rid={1}", parameters: new object[] { damage, Rid }).ToList()[0];
                 return damageResult.Did;
@@ -1022,7 +1010,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.Amenity WHERE aid={0}", parameters: Aid);
                 return numDelete == 1;
             }
@@ -1038,7 +1025,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.Amenity (amenity,rid) VALUES ({0},{1})", parameters: new object[] { amenity, Rid });
                 var amenityResult = _context.Amenity.FromSql("SELECT * FROM eHotel.Amenity WHERE amenity={0} AND rid={1}", parameters: new object[] { amenity, Rid }).ToList()[0];
                 return amenityResult.Aid;
@@ -1055,7 +1041,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 //GET booking from bid
                 Booking booking = _context.Booking.FromSql("SELECT * FROM eHotel.Booking WHERE bid={0}", parameters: bid).ToList()[0];
 
@@ -1087,7 +1072,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 //GET booking from bid
                 Booking booking = _context.Booking.FromSql("SELECT * FROM eHotel.Booking WHERE bid={0}", parameters: bid).ToList()[0];
                 return booking;
@@ -1104,7 +1088,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.booking WHERE bid={0}", parameters: Bid);
                 return numDelete == 1;
             }
@@ -1120,7 +1103,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.hotelchain WHERE hcid={0}", parameters: Hcid);
                 return numDelete == 1;
             }
@@ -1141,7 +1123,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Object[] insertArray = new object[] { model.HotelChainName, model.StreetNumber, model.StreetName,
                 model.AptNumber, model.City, model.HcState,model.Zip, model.NumHotels };
                 _context.Database.ExecuteSqlCommand(
@@ -1162,7 +1143,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 Hotelchain hotelChain = _context.Hotelchain.FromSql("SELECT * FROM eHotel.hotelchain WHERE Hcid={0}", parameters: Hcid).ToList()[0];
                 return hotelChain;
             }
@@ -1180,7 +1160,6 @@ namespace eHotels.Controllers
                 model.AptNumber, model.City,model.HcState,model.Zip,model.Hcid };
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("UPDATE eHotel.hotelchain SET hotel_chain_name={0}, street_number={1}, street_name={2}, apt_number={3}, city={4}, hc_state={5}, zip={6} WHERE hcid={7}", parameters: insertArray);
                 return true;
             }
@@ -1196,7 +1175,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.hotelchainphone WHERE hcid={0} AND phone_number={1}", parameters: new object[] { Hcid, PhoneNumber });
                 return numDelete == 1;
             }
@@ -1212,7 +1190,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelchainphone VALUES ({0},{1})", parameters: new object[] { PhoneNumber, Hcid });
                 return true;
             }
@@ -1228,7 +1205,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 var numDelete = _context.Database.ExecuteSqlCommand("DELETE FROM eHotel.hotelchainemail WHERE hcid={0} AND email={1}", parameters: new object[] { Hcid, Email });
                 return numDelete == 1;
             }
@@ -1244,7 +1220,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 _context.Database.ExecuteSqlCommand("INSERT INTO eHotel.hotelchainemail VALUES ({0},{1})", parameters: new object[] { Email, Hcid });
                 return true;
             }
@@ -1260,7 +1235,6 @@ namespace eHotels.Controllers
         {
             try
             {
-                //FINDQUERY
                 //GET old renting
                 List<Renting> rentings = _context.Renting.FromSql("SELECT * FROM eHotel.renting WHERE end_date<{0}", parameters: DateTime.Today.AddMonths(-1)).ToList();
 
