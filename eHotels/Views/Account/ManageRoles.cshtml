@@ -166,12 +166,13 @@
                         `
                         <li class="list-group-item" id="role` + selectedSSN.toString() + myIndex + `">`
                         + role +
-                        `<a onclick="roleDelete(` + selectedSSN.toString() + `, '` + role + `', ` + myIndex +`)" class="text-center col-md-2">
+                        `<a onclick="roleDelete(` + selectedSSN.toString() + `, '` + role + `', ` + selectedSSN.toString() + myIndex +`)" class="text-center col-md-2">
                                 <i class="glyphicon glyphicon-trash" data-toggle="tooltip" data-placement="top" title="Delete this role"></i>
                             </a>
                         </li>
                     `
                     );
+                    myIndex++;
                     $("#topList").fadeIn();
                     $("#topError").text("");
                     $("#topSuccess").text("The role was successfully added");
@@ -190,7 +191,6 @@
 
         function selectSsn(ssn) {
             selectedSSN = ssn;
-            console.log(selectedSSN);
         }
 
         function employeeDelete(ssn) {

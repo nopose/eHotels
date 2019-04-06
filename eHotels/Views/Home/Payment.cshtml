@@ -65,7 +65,7 @@
                                     <strong>$@(Model.booking.R.Price * ((Model.booking.EndDate - Model.booking.StartDate).Days + 1))</strong>
                                 </p>
                                 <p>
-                                    <strong>$@string.Format("{0:N2}", (Model.booking.R.Price * ((Model.booking.EndDate - Model.booking.StartDate).Days + 1)) * (decimal) 0.13)</strong>
+                                    <strong>$@string.Format("{0:N2}", (Model.booking.R.Price * ((Model.booking.EndDate - Model.booking.StartDate).Days + 1)) * (decimal)0.13)</strong>
                                 </p>
                             </td>
                         </tr>
@@ -98,7 +98,6 @@
                     }
                 }
                 <form asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" asp-controller=@(controller) asp-action=@(action)>
-                    <h4>Create a new customer account.</h4>
                     <hr />
                     @Html.HiddenFor(Model => Model.booking.Bid)
                     @Html.HiddenFor(Model => Model.booking.StartDate)
@@ -155,4 +154,11 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        $(document).ready(function () {
+            var ssn = $("#booking_CustomerSsn").val();
+            if(ssn > 0)
+                $("#SSN").val(ssn);
+        });
+    </script>
 }

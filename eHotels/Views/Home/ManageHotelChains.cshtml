@@ -12,6 +12,12 @@
 </div>
 <div class="row">
     <div class="col-md-8">
+        <a asp-area="" asp-controller="Home" asp-action="CreateHotelChain" class="btn btn-primary col-md-6">Add a new hotel chain</a>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-md-8">
         @foreach (var item in Model)
         {
             <div id="hotelChain@(item.Hcid)" class="panel panel-primary">
@@ -41,12 +47,6 @@
                 </div>
             </div>
         }
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-8">
-        <a asp-area="" asp-controller="Home" asp-action="CreateHotelChain" class="btn btn-primary col-md-6">Add a new hotel chain</a>
     </div>
 </div>
 
